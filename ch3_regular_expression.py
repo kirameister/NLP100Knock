@@ -36,7 +36,7 @@ def knock20():
 def knock21():
     return_string = ""
     pattern = re.compile(u"\[\[Category.*\]\]")
-    data = knock20().split() # Need to consider it as array otherwise 
+    data = knock20().split('\n') # Need to consider it as array otherwise 
     for line in data:
         if(pattern.search(line)):
             return_string += line + "\n"
@@ -49,7 +49,7 @@ def knock21():
 def knock22():
     return_string = ""
     pattern = re.compile(u"\[\[Category:(.*)\]\]")
-    data = knock20().split()
+    data = knock20().split('\n')
     for line in data:
         if(pattern.search(line)):
             match_result = pattern.search(line)
@@ -63,7 +63,7 @@ def knock22():
 def knock23():
     return_string = ""
     levels = re.compile(u"^(=+)([^=]+?)(=+)$")
-    data = knock20().split()
+    data = knock20().split('\n')
     for line in data:
         if(levels.search(line)):
             match_result = levels.search(line)
@@ -75,35 +75,106 @@ def knock23():
 記事から参照されているメディアファイルをすべて抜き出せ．
 '''
 def knock24():
-    return(None)
+    return_string = ""
+    file_pattern = re.compile(u"\[\[File:(.*?)\|(.*)$|\[\[ファイル:(.*?)\|(.*)$")
+    data = knock20().split('\n')
+    for line in data:
+        reg_result = file_pattern.search(line)
+        if(reg_result):
+            elements = reg_result.groups()
+            if(elements[0]):
+                return_string += elements[0] + "\n"
+            elif(elements[2]):
+                return_string += elements[2] + "\n"
+    return(return_string)
 
 '''
 25. テンプレートの抽出
 記事中に含まれる「基礎情報」テンプレートのフィールド名と値を抽出し，辞書オブジェクトとして格納せよ．
 '''
 def knock25():
-    return(None)
+    return_dict = dict()
+    current_key = ""
+    flag = False
+    start_trigger = re.compile(u"{{基礎情報")
+    end_trigger   = re.compile(u"}}")
+    key_value_pattern = re.compile(u"\|(.*?) = (.*)$")
+    data = knock20().split('\n')
+    for line in data:
+        # start trigger
+        if(start_trigger.match(line)):
+            flag = True
+            continue
+        if(end_trigger.match(line)):
+            break
+        if(flag):
+            reg_result = key_value_pattern.search(line)
+            if(reg_result):
+                elements = reg_result.groups()
+                current_key = elements[0]
+                return_dict[current_key] = elements[1]
+            else: # remaining values for current key
+                return_dict[current_key] = return_dict[current_key] + line
+    return(return_dict)
 
 '''
 26. 強調マークアップの除去
 25の処理時に，テンプレートの値からMediaWikiの強調マークアップ（弱い強調，強調，強い強調のすべて）を除去してテキストに変換せよ（参考: マークアップ早見表）．
 '''
 def knock26():
-    return(None)
+    src_dict  = knock25()
+    dist_dict = dict()
+    for k,v in src_dict.items():
+        v = re.sub(u"\'\'\'(.*)\'\'\'", u"\\1", v)
+        dist_dict[k] = v
+    return(dist_dict)
 
 '''
 27. 内部リンクの除去
 26の処理に加えて，テンプレートの値からMediaWikiの内部リンクマークアップを除去し，テキストに変換せよ（参考: マークアップ早見表）．
 '''
 def knock27():
-    return(None)
+    src_dict  = knock26()
+    dist_dict = dict()
+    for k,v in src_dict.items():
+        #print(v + "\t\t\t => \t\t\t", end="")
+        dist_dict[k] = remove_internal_link(v)
+        #print(dist_dict[k])
+    return(dist_dict)
+
+def remove_internal_link(line):
+    multiple_chunk_trigger = re.compile(u"(^.*?\[\[.*?\]\])(.*?\[\[.*\]\].*$)")
+    reg_result = multiple_chunk_trigger.search(line)
+    if(reg_result): # what if there are multiple chunks to be handled? 
+        elements = reg_result.groups()
+        line = remove_internal_link(elements[0]) + remove_internal_link(elements[1])
+    if(re.match(u".*\[\[.*\|(.*?)\]\]", line)):
+        line = re.sub(u"\[\[.*\|(.*?)\]\]", "\\1", line)
+    else:
+        line = re.sub(u"\[\[(.*?)\]\]", "\\1", line)
+    return(line)
 
 '''
 28. MediaWikiマークアップの除去
 27の処理に加えて，テンプレートの値からMediaWikiマークアップを可能な限り除去し，国の基本情報を整形せよ．
 '''
 def knock28():
-    return(None)
+    src_dict  = knock27()
+    dist_dict = dict()
+    for k,v in src_dict.items():
+        dist_dict[k] = remove_internal_brackets(v)
+    return(dist_dict)
+def remove_internal_brackets(line):
+    multiple_chunk_trigger = re.compile(u"(^.*?\{\{.*?\}\})(.*?\{\{.*\}\}.*?$)")
+    reg_result = multiple_chunk_trigger.search(line)
+    if(reg_result): # what if there are multiple chunks to be handled? 
+        elements = reg_result.groups()
+        line = remove_internal_brackets(elements[0]) + remove_internal_brackets(elements[1])
+    if(re.match(u".*\{\{.*\|(.*?)\}\}", line)):
+        line = re.sub(u"{{.*\|(.*?)\}\}", "\\1", line)
+    else:
+        line = re.sub(u"\{\{(.*?)\}\}", "\\1", line)
+    return(line)
 
 '''
 29. 国旗画像のURLを取得する
@@ -133,9 +204,14 @@ if(__name__ == '__main__'):
     if(args.knock == 6 or args.knock == 26):
         print(knock26())
     if(args.knock == 7 or args.knock == 27):
-        print(knock27())
+        #print(knock27())
+        for k, v in knock27().items():
+            print("%s \t %s" % (k, v))
     if(args.knock == 8 or args.knock == 28):
-        print(knock28())
+        #print(knock28())
+        for k, v in knock28().items():
+            print("%s \t %s" % (k, v))
+            pass
     if(args.knock == 9 or args.knock == 29):
         print(knock29())
 
