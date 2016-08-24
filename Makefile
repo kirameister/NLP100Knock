@@ -31,7 +31,7 @@ nlp.txt:
 temporary_files = col1.txt col2.txt
 
 clean:
-	$(RM) $(temporary_files)
+	$(RM) $(temporary_files) split*
 
 clean_all:
 	$(RM) $(target_files) $(temporary_files)
