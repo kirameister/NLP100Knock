@@ -181,7 +181,8 @@ def remove_internal_brackets(line):
 テンプレートの内容を利用し，国旗画像のURLを取得せよ．（ヒント: MediaWiki APIのimageinfoを呼び出して，ファイル参照をURLに変換すればよい）
 '''
 def knock29():
-    return(None)
+    return_list = []
+    return(return_list)
 
 if(__name__ == '__main__'):
     parser = argparse.ArgumentParser(description='Ch 3')
