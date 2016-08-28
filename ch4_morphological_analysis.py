@@ -2,6 +2,7 @@
 # 第4章: 形態素解析
 
 import argparse
+import re
 
 
 '''
@@ -15,28 +16,56 @@ import argparse
 形態素解析結果（neko.txt.mecab）を読み込むプログラムを実装せよ．ただし，各形態素は表層形（surface），基本形（base），品詞（pos），品詞細分類1（pos1）をキーとするマッピング型に格納し，1文を形態素（マッピング型）のリストとして表現せよ．第4章の残りの問題では，ここで作ったプログラムを活用せよ．
 '''
 def knock30():
-    return(None)
+    return_list = list()
+    with open("./neko.txt.mecab", 'r') as f:
+        for line in f:
+            line = line.rstrip()
+            if(line == "EOS"):
+                continue
+            dict = {}
+            dict['surface'] = line.split('\t')[0]
+            subline = line.split('\t')[1]
+            dict['base'] = subline.split(',')[6]
+            dict['pos'] = subline.split(',')[0]
+            dict['pos1'] = subline.split(',')[1]
+            return_list.append(dict)
+    return(return_list)
 
 '''
 31. 動詞
 動詞の表層形をすべて抽出せよ．
 '''
 def knock31():
-    return(None)
+    return_set = set()
+    src_list = knock30()
+    for item in src_list:
+        if((item['pos'] == u"動詞") and (not item['surface'] in return_set)):
+            return_set.add(item['surface'])
+    return(return_set)
 
 '''
 32. 動詞の原形
 動詞の原形をすべて抽出せよ．
 '''
 def knock32():
-    return(None)
+    return_set = set()
+    src_list = knock30()
+    for item in src_list:
+        if((item['pos'] == u"動詞") and (not item['base'] in return_set)):
+            return_set.add(item['base'])
+    return(return_set)
 
 '''
 33. サ変名詞
 サ変接続の名詞をすべて抽出せよ．
 '''
 def knock33():
-    return(None)
+    return_set = set()
+    src_list = knock30()
+    for item in src_list:
+        if((item['pos'] == u"名詞") and (item['pos1'] == u"サ変接続") and (not item['surface'] in return_set)):
+            return_set.add(item['surface'])
+    return(return_set)
 
 '''
 34. 「AのB」
