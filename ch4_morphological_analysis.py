@@ -72,27 +72,58 @@ def knock33():
 2つの名詞が「の」で連結されている名詞句を抽出せよ．
 '''
 def knock34():
-    return(None)
+    return_list = list()
+    src_list = knock30()
+    for i, item in enumerate(src_list):
+        if(item["pos"] == u"名詞" and src_list[i+1]["pos1"] == u"連体化" and src_list[i+1]["base"] == u"の" and src_list[i+2]["pos"] == u"名詞"):
+            return_list.append(item["surface"] + u"の" + src_list[i+2]["surface"])
+    return(return_list)
 
 '''
 35. 名詞の連接
 名詞の連接（連続して出現する名詞）を最長一致で抽出せよ．
 '''
 def knock35():
-    return(None)
+    return_list = list()
+    previous_nouns = ""
+    flag = 0
+    src_list = knock30()
+    for item in src_list:
+        if(item["pos"] == u"名詞" and flag):
+            previous_nouns += item["surface"]
+            flag += 1
+        if(item["pos"] == u"名詞" and (not flag)):
+            previous_nouns = ""
+            previous_nouns += item["surface"]
+            previous_nouns = item["surface"]
+            flag += 1
+        else:
+            if(previous_nouns != "" and flag > 1): 
+                return_list.append(previous_nouns)
+            previous_nouns = ""
+            flag = 0
+    return(return_list)
 
 '''
 36. 単語の出現頻度
 文章中に出現する単語とその出現頻度を求め，出現頻度の高い順に並べよ．
 '''
 def knock36():
-    return(None)
+    src_list = knock30()
+    unsorted_dict = dict()
+    for item in src_list:
+        word = item["base"]
+        unsorted_dict[word] = unsorted_dict.get(word, 0) + 1
+    return(sorted(unsorted_dict.items(), key=lambda x: x[1], reverse=True))
 
 '''
 37. 頻度上位10語
 出現頻度が高い10語とその出現頻度をグラフ（例えば棒グラフなど）で表示せよ．
 '''
 def knock37():
+    src_list = knock36()
+    for i in range(10):
+        print(src_list[i])
     return(None)
 
 '''
