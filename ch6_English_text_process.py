@@ -83,7 +83,7 @@ def knock59():
 
 
 if(__name__ == '__main__'):
-    parser = argparse.ArgumentParser(description='Ch 5')
+    parser = argparse.ArgumentParser(description='Ch 6')
     parser.add_argument('knock', type=int, help="Number of knock")
     parser.add_argument('-a', '--arg', help="Additional argument where appropriate")
     args = parser.parse_args()
