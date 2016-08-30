@@ -2,6 +2,9 @@
 # 第4章: 形態素解析
 
 import argparse
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+import numpy as np
 import re
 
 
@@ -10,6 +13,14 @@ import re
 
 なお，問題37, 38, 39はmatplotlibもしくはGnuplotを用いるとよい．
 '''
+def find_font(keyword):
+    pattern = re.compile(".*" + keyword + ".*")
+    all_fonts = fm.findSystemFonts()
+    for font in all_fonts:
+        if(pattern.search(font)):
+            return(font)
+    return(None)
+
 
 '''
 30. 形態素解析結果の読み込み
@@ -122,8 +133,21 @@ def knock36():
 '''
 def knock37():
     src_list = knock36()
+    x = []
+    x_names = []
+    y = []
     for i in range(10):
-        print(src_list[i])
+        x.append(i)
+        x_names.append(src_list[i][0])
+        y.append(src_list[i][1])
+    plt.bar(x, y, align="center")
+    font_name = find_font("japanese")
+    prop = fm.FontProperties(fname=font_name)
+    if(prop):
+        plt.xticks(x, x_names, fontproperties=prop)
+    else:
+        plt.xticks(x, x_names)
+    plt.show()
     return(None)
 
 '''
@@ -131,6 +155,15 @@ def knock37():
 単語の出現頻度のヒストグラム（横軸に出現頻度，縦軸に出現頻度をとる単語の種類数を棒グラフで表したもの）を描け．
 '''
 def knock38():
+    src_list = knock36()
+    size = len(src_list)
+    x = []
+    for i in src_list:
+        x.append(i[1])
+    #plt.hist(x_array, bins=size)
+    plt.hist(x)
+    plt.yscale('log')
+    plt.show()
     return(None)
 
 '''
@@ -138,6 +171,17 @@ def knock38():
 単語の出現頻度順位を横軸，その出現頻度を縦軸として，両対数グラフをプロットせよ．
 '''
 def knock39():
+    src_list = knock36()
+    x = []
+    y = []
+    for i,v in enumerate(src_list):
+        x.append(v[1])
+        y.append(i)
+    plt.plot(x,y)
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.show()
+
     return(None)
 
 
