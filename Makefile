@@ -1,5 +1,5 @@
 
-target_files = hightemp.txt jawiki-country.json neko.txt neko.txt.mecab neko.txt.cabocha nlp.txt
+target_files = hightemp.txt jawiki-country.json neko.txt neko.txt.mecab neko.txt.cabocha nlp.txt artist.json rt-polaritydata.README.1.0.txt enwiki-20150112-400-r10-105752.txt enwiki-20150112-400-r10-105752.txt.bz2
 
 all: $(target_files)
 
@@ -27,6 +27,20 @@ neko.txt.cabocha: neko.txt
 nlp.txt:
 	wget http://www.cl.ecei.tohoku.ac.jp/nlp100/data/nlp.txt
 
+# Ch7
+artist.json: 
+	wget http://www.cl.ecei.tohoku.ac.jp/nlp100/data/artist.json.gz
+	gzip -d artist.json.gz
+
+# Ch8
+rt-polaritydata.README.1.0.txt:
+	wget http://www.cs.cornell.edu/people/pabo/movie-review-data/rt-polaritydata.README.1.0.txt
+
+# Ch9
+enwiki-20150112-400-r10-105752.txt.bz2:
+	wget http://www.cl.ecei.tohoku.ac.jp/nlp100/data/enwiki-20150112-400-r10-105752.txt.bz2
+enwiki-20150112-400-r10-105752.txt: enwiki-20150112-400-r10-105752.txt.bz2
+	bzip2 -d enwiki-20150112-400-r10-105752.txt.bz2
 
 temporary_files = col1.txt col2.txt
 
@@ -34,6 +48,6 @@ clean:
 	$(RM) $(temporary_files) split*
 
 clean_all:
-	$(RM) $(target_files) $(temporary_files)
+	$(RM) $(target_files) $(temporary_files) split*
 
 
