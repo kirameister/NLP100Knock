@@ -52,6 +52,8 @@ def knock41():
     chunk_list           = []
     morph_list           = []
     srcs                 = []
+    temporary_src_dict   = {}
+    chunk_number         = 0
     with open("./neko.txt.cabocha", 'r') as f:
         for line in f:
             if(re.search(u"^\*", line)):
@@ -60,7 +62,8 @@ def knock41():
                 elements = line.split(" ")
                 chunk_number = int(elements[1])
                 dst = int(elements[2].rstrip("D"))
-                chunk = Chunk(morphs=morph_list, dst=dst, srcs=[])
+                temporary_src_dict[dst] = chunk_number # FIXME
+                chunk = Chunk(morphs=None, dst=dst, srcs=[])
                 chunk_list.append(chunk)
                 morph_list = []
             if('\t' in line):
@@ -70,7 +73,7 @@ def knock41():
                 pos  = remaining.split(',')[0]
                 pos1 = remaining.split(',')[1]
                 morph = Morph(surface, base, pos, pos1)
-                morph_list.append(morph)
+                chunk_list[chunk_number].morphs.append(morph)
             if(line.rstrip() == u"EOS"):
                 # end of the sentence = need to wrap up for this sentence
                 return_sentence_list.append(chunk_list)
