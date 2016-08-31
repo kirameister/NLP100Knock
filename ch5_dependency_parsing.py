@@ -52,21 +52,19 @@ def knock41():
     chunk_list           = []
     morph_list           = []
     srcs                 = []
-    temporary_src_dict   = {}
     chunk_number         = 0
     with open("./neko.txt.cabocha", 'r') as f:
         for line in f:
             if(re.search(u"^\*", line)):
                 # line with dependency information
-                # because the actual text is shown AFTER this line, some trick needs to be done. 
                 elements = line.split(" ")
                 chunk_number = int(elements[1])
                 dst = int(elements[2].rstrip("D"))
-                temporary_src_dict[dst] = temporary_src_dict.get(dst, "") + "_" +  str(chunk_number) # FIXME
+                # because the actual text is shown AFTER this line, this is only initialization
                 chunk_list.append(Chunk(morphs=[], dst=dst, srcs=[]))
                 morph_list = []
             if('\t' in line):
-                # morphme
+                # storing morphme
                 (surface, remaining) = line.split("\t")
                 base = remaining.split(',')[6]
                 pos  = remaining.split(',')[0]
@@ -76,15 +74,15 @@ def knock41():
             if(line.rstrip() == u"EOS"):
                 # end of the sentence = need to wrap up for this sentence
                 ## Update the srcs list for each chunk in the sentence 
-                for i,v in temporary_src_dict.items():
-                    elements = v.split('_')
-                    chunk_list[i].src = elements
-                # FIXME
+                for i in range(chunk_number):
+                    if(chunk_list[i].dst == -1):
+                        continue
+                    chunk_list[chunk_list[i].dst].srcs.append(int(i))
                 return_sentence_list.append(chunk_list)
-                temporary_src_dict = {}
                 chunk_list = []
                 morph_list = []
                 srcs = []
+                chunk_number = 0
     return(return_sentence_list)
 
 '''
@@ -202,15 +200,15 @@ if(__name__ == '__main__'):
         for morph in knock40()[2]:
             print(morph.surface + "\t" + morph.pos + "\t" + morph.pos1)
     if(args.knock == 1 or args.knock == 41):
-        for sentence in knock41()[8]:
-            #print(" ".join(sentence.morphs) + "\t" + str(sentence.dst) )
+        print("ID \t surface \t DST \t SRCS")
+        for (i, sentence) in enumerate(knock41()[7]):
             morph_text = ""
             src_text = ""
             for morph in sentence.morphs:
                 morph_text += " " + morph.surface
             for src in sentence.srcs:
                 src_text += " " + str(src)
-            print(morph_text + "\t" + str(sentence.dst) + "\t" + src_text)
+            print(str(i) + "\t" + morph_text + "\t" + str(sentence.dst) + "\t" + src_text)
     if(args.knock == 2 or args.knock == 42):
         print(knock42())
     if(args.knock == 3 or args.knock == 43):
