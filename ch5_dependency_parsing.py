@@ -62,8 +62,8 @@ def knock41():
                 elements = line.split(" ")
                 chunk_number = int(elements[1])
                 dst = int(elements[2].rstrip("D"))
-                temporary_src_dict[dst] = chunk_number # FIXME
-                chunk = Chunk(morphs=None, dst=dst, srcs=[])
+                temporary_src_dict[dst] = temporary_src_dict.get(dst, "") + "_" +  str(chunk_number) # FIXME
+                chunk = Chunk(morphs=[], dst=dst, srcs=[])
                 chunk_list.append(chunk)
                 morph_list = []
             if('\t' in line):
@@ -76,7 +76,13 @@ def knock41():
                 chunk_list[chunk_number].morphs.append(morph)
             if(line.rstrip() == u"EOS"):
                 # end of the sentence = need to wrap up for this sentence
+                ## Update the srcs list for each chunk in the sentence 
+                for i,v in temporary_src_dict.items():
+                    elements = v.split('_')
+                    chunk_list[i].src = elements
+                # FIXME
                 return_sentence_list.append(chunk_list)
+                temporary_src_dict = {}
                 chunk_list = []
                 morph_list = []
                 srcs = []
@@ -200,9 +206,12 @@ if(__name__ == '__main__'):
         for sentence in knock41()[8]:
             #print(" ".join(sentence.morphs) + "\t" + str(sentence.dst) )
             morph_text = ""
+            src_text = ""
             for morph in sentence.morphs:
                 morph_text += " " + morph.surface
-            print(morph_text + "\t" + str(sentence.dst))
+            for src in sentence.srcs:
+                src_text += " " + str(src)
+            print(morph_text + "\t" + str(sentence.dst) + "\t" + src_text)
     if(args.knock == 2 or args.knock == 42):
         print(knock42())
     if(args.knock == 3 or args.knock == 43):
