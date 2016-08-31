@@ -2,6 +2,7 @@
 # 第5章: 係り受け解析
 
 import argparse
+import re
 
 
 '''
@@ -12,23 +13,71 @@ import argparse
 40. 係り受け解析結果の読み込み（形態素）
 形態素を表すクラスMorphを実装せよ．このクラスは表層形（surface），基本形（base），品詞（pos），品詞細分類1（pos1）をメンバ変数に持つこととする．さらに，CaboChaの解析結果（neko.txt.cabocha）を読み込み，各文をMorphオブジェクトのリストとして表現し，3文目の形態素列を表示せよ．
 '''
-class Morph(Object):
-    def __init__(surface, base, pos, pos1):
-    self.surface = surface
-    self.base    = base
-    self.pos     = pos
-    self.pos1    = pos1
-    pass
+class Morph(object):
+    def __init__(self, surface, base, pos, pos1):
+        self.surface = surface
+        self.base    = base
+        self.pos     = pos
+        self.pos1    = pos1
 
 def knock40():
-    return(None)
+    submorph_list = []
+    morph_list    = []
+    with open("./neko.txt.cabocha") as f:
+        for line in f:
+            if('\t' in line):
+                (surface, remaining) = line.split("\t")
+                base = remaining.split(',')[6]
+                pos  = remaining.split(',')[0]
+                pos1 = remaining.split(',')[1]
+                morph = Morph(surface, base, pos, pos1)
+                submorph_list.append(morph)
+            if(line.rstrip() == u"EOS"):
+                morph_list.append(submorph_list)
+                submorph_list = []
+    return(morph_list)
 
 '''
 41. 係り受け解析結果の読み込み（文節・係り受け）
 40に加えて，文節を表すクラスChunkを実装せよ．このクラスは形態素（Morphオブジェクト）のリスト（morphs），係り先文節インデックス番号（dst），係り元文節インデックス番号のリスト（srcs）をメンバ変数に持つこととする．さらに，入力テキストのCaboChaの解析結果を読み込み，１文をChunkオブジェクトのリストとして表現し，8文目の文節の文字列と係り先を表示せよ．第5章の残りの問題では，ここで作ったプログラムを活用せよ．
 '''
+class Chunk(object):
+    # This class represents one chunk, NOT one sentence. 
+    def __init__(self, morphs, dst, srcs):
+        self.morphs = morphs # list of Morph classes
+        self.dst    = dst    # int: ID of that chunk in sentence
+        self.srcs   = srcs   # list of IDs referring to this chunk
 def knock41():
-    return(None)
+    return_sentence_list = []
+    chunk_list           = []
+    morph_list           = []
+    srcs                 = []
+    with open("./neko.txt.cabocha", 'r') as f:
+        for line in f:
+            if(re.search(u"^\*", line)):
+                # line with dependency information
+                # because the actual text is shown AFTER this line, some trick needs to be done. 
+                elements = line.split(" ")
+                chunk_number = int(elements[1])
+                dst = int(elements[2].rstrip("D"))
+                chunk = Chunk(morphs=morph_list, dst=dst, srcs=[])
+                chunk_list.append(chunk)
+                morph_list = []
+            if('\t' in line):
+                # morphme
+                (surface, remaining) = line.split("\t")
+                base = remaining.split(',')[6]
+                pos  = remaining.split(',')[0]
+                pos1 = remaining.split(',')[1]
+                morph = Morph(surface, base, pos, pos1)
+                morph_list.append(morph)
+            if(line.rstrip() == u"EOS"):
+                # end of the sentence = need to wrap up for this sentence
+                return_sentence_list.append(chunk_list)
+                chunk_list = []
+                morph_list = []
+                srcs = []
+    return(return_sentence_list)
 
 '''
 42. 係り元と係り先の文節の表示
@@ -142,9 +191,15 @@ if(__name__ == '__main__'):
     args = parser.parse_args()
 
     if(args.knock == 0 or args.knock == 40):
-        print(knock40())
+        for morph in knock40()[2]:
+            print(morph.surface + "\t" + morph.pos + "\t" + morph.pos1)
     if(args.knock == 1 or args.knock == 41):
-        print(knock41())
+        for sentence in knock41()[8]:
+            #print(" ".join(sentence.morphs) + "\t" + str(sentence.dst) )
+            morph_text = ""
+            for morph in sentence.morphs:
+                morph_text += " " + morph.surface
+            print(morph_text + "\t" + str(sentence.dst))
     if(args.knock == 2 or args.knock == 42):
         print(knock42())
     if(args.knock == 3 or args.knock == 43):
