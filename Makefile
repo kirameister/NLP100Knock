@@ -21,7 +21,7 @@ neko.txt.mecab: neko.txt
 
 # Ch5
 neko.txt.cabocha: neko.txt
-	cabocha neko.txt > neko.txt.cabocha
+	cabocha -f1 neko.txt > neko.txt.cabocha
 
 # Ch6
 nlp.txt:
