@@ -63,8 +63,7 @@ def knock41():
                 chunk_number = int(elements[1])
                 dst = int(elements[2].rstrip("D"))
                 temporary_src_dict[dst] = temporary_src_dict.get(dst, "") + "_" +  str(chunk_number) # FIXME
-                chunk = Chunk(morphs=[], dst=dst, srcs=[])
-                chunk_list.append(chunk)
+                chunk_list.append(Chunk(morphs=[], dst=dst, srcs=[]))
                 morph_list = []
             if('\t' in line):
                 # morphme
