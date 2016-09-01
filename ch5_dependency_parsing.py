@@ -51,6 +51,11 @@ class Chunk(object):
         self.morphs = morphs # list of Morph classes
         self.dst    = dst    # int: ID of that chunk in sentence
         self.srcs   = srcs   # list of IDs referring to this chunk
+    def get_base(self):
+        base_text = ""
+        for morph in self.morphs:
+            base_text += " " + morph.base
+        return(base_text)
     def get_surface(self):
         surface_text = ""
         for morph in self.morphs:
@@ -166,7 +171,19 @@ def knock44(sentence_id):
 - 「する」「見る」「与える」という動詞の格パターン（コーパス中で出現頻度の高い順に並べよ）
 '''
 def knock45():
-    return(None)
+    return_list = []
+    for sentence in knock41():
+        for chunk in sentence:
+            if(chunk.morphs[0].pos == u"動詞"):
+                particle_list = []
+                for src_id in chunk.srcs:
+                    for morph in sentence[src_id].morphs:
+                        if(morph.pos == u"助詞"):
+                            particle_list.append(morph.base)
+                if(len(particle_list) > 0):
+                    particles = " ".join(particle_list)
+                    return_list.append(chunk.morphs[0].base + "\t" + particles)
+    return(return_list)
 
 '''
 46. 動詞の格フレーム情報の抽出
@@ -273,7 +290,7 @@ if(__name__ == '__main__'):
         g.set_type('digraph')
         g.write_jpeg(args.arg, prog="dot")
     if(args.knock == 5 or args.knock == 45):
-        print(knock45())
+        print("\n".join(knock45()))
     if(args.knock == 6 or args.knock == 46):
         print(knock46())
     if(args.knock == 7 or args.knock == 47):
