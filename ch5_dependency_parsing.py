@@ -3,6 +3,7 @@
 
 import argparse
 import re
+import pydot
 
 
 '''
@@ -23,8 +24,11 @@ class Morph(object):
 def knock40():
     submorph_list = []
     morph_list    = []
+    validation_pattern = re.compile("(.*?)\t")
     with open("./neko.txt.cabocha") as f:
         for line in f:
+            if(re.match("\t.*\t",line)):
+                continue
             if('\t' in line):
                 (surface, remaining) = line.split("\t")
                 base = remaining.split(',')[6]
@@ -47,6 +51,24 @@ class Chunk(object):
         self.morphs = morphs # list of Morph classes
         self.dst    = dst    # int: ID of that chunk in sentence
         self.srcs   = srcs   # list of IDs referring to this chunk
+    def get_surface(self):
+        surface_text = ""
+        for morph in self.morphs:
+            surface_text += " " + morph.surface
+        return(surface_text)
+    def get_surface_without_punctuation(self):
+        surface_text = ""
+        for morph in self.morphs:
+            if(u"記号" in morph.pos):
+                continue
+            surface_text += " " + morph.surface
+        return(surface_text)
+    def get_list_of_pos(self):
+        return_list = []
+        for morph in self.morphs:
+            return_list.append(morph.pos)
+        return(return_list)
+
 def knock41():
     return_sentence_list = []
     chunk_list           = []
@@ -90,21 +112,39 @@ def knock41():
 係り元の文節と係り先の文節のテキストをタブ区切り形式ですべて抽出せよ．ただし，句読点などの記号は出力しないようにせよ．
 '''
 def knock42():
-    return(None)
+    return_list = []
+    for sentence in knock41():
+        return_list.append("New sentence")
+        for chunk in sentence:
+            if(chunk.dst == -1):
+                continue
+            return_list.append(chunk.get_surface() + "\t" + sentence[chunk.dst].get_surface_without_punctuation())
+    return(return_list)
 
 '''
 43. 名詞を含む文節が動詞を含む文節に係るものを抽出
 名詞を含む文節が，動詞を含む文節に係るとき，これらをタブ区切り形式で抽出せよ．ただし，句読点などの記号は出力しないようにせよ．
 '''
 def knock43():
-    return(None)
+    return_list = []
+    for sentence in knock41():
+        return_list.append("New sentence")
+        for i, chunk in enumerate(sentence):
+            j = sentence[i].dst
+            src_pos_list = sentence[i].get_list_of_pos()
+            dst_pos_list = sentence[j].get_list_of_pos()
+            if(u"名詞" in src_pos_list and u"動詞" in dst_pos_list):
+                return_list.append(sentence[i].get_surface() + "\t" + sentence[j].get_surface_without_punctuation())
+    return(return_list)
 
 '''
 44. 係り受け木の可視化
 与えられた文の係り受け木を有向グラフとして可視化せよ．可視化には，係り受け木をDOT言語に変換し，Graphvizを用いるとよい．また，Pythonから有向グラフを直接的に可視化するには，pydotを使うとよい．
 '''
-def knock44():
-    return(None)
+def knock44(sentence_id):
+    return_list = []
+    sentence = knock41()[sentence_id]
+    return(return_list)
 
 '''
 45. 動詞の格パターンの抽出
@@ -194,27 +234,30 @@ if(__name__ == '__main__'):
     parser = argparse.ArgumentParser(description='Ch 5')
     parser.add_argument('knock', type=int, help="Number of knock")
     parser.add_argument('-a', '--arg', help="Additional argument where appropriate")
+    parser.add_argument('-n', '--num', help="Sentence ID to process for knock44")
     args = parser.parse_args()
 
     if(args.knock == 0 or args.knock == 40):
         for morph in knock40()[2]:
             print(morph.surface + "\t" + morph.pos + "\t" + morph.pos1)
     if(args.knock == 1 or args.knock == 41):
+        if(not args.arg):
+            args.arg = 7
         print("ID \t surface \t DST \t SRCS")
-        for (i, sentence) in enumerate(knock41()[7]):
-            morph_text = ""
+        for (i, chunk) in enumerate(knock41()[int(args.arg)]):
+            surface_text = chunk.get_surface()
             src_text = ""
-            for morph in sentence.morphs:
-                morph_text += " " + morph.surface
-            for src in sentence.srcs:
+            for src in chunk.srcs:
                 src_text += " " + str(src)
-            print(str(i) + "\t" + morph_text + "\t" + str(sentence.dst) + "\t" + src_text)
+            print(str(i) + "\t" + surface_text + "\t" + str(chunk.dst) + "\t" + src_text)
     if(args.knock == 2 or args.knock == 42):
-        print(knock42())
+        print("\n".join(knock42()))
     if(args.knock == 3 or args.knock == 43):
-        print(knock43())
+        print("\n".join(knock43()))
     if(args.knock == 4 or args.knock == 44):
-        print(knock44())
+        if(not args.num):
+            args.num = 7
+        print(knock44(args.num))
     if(args.knock == 5 or args.knock == 45):
         print(knock45())
     if(args.knock == 6 or args.knock == 46):
