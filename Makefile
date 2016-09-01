@@ -45,9 +45,9 @@ enwiki-20150112-400-r10-105752.txt: enwiki-20150112-400-r10-105752.txt.bz2
 temporary_files = col1.txt col2.txt
 
 clean:
-	$(RM) $(temporary_files) split*
+	$(RM) $(temporary_files) split* knock44_output.jpeg
 
 clean_all:
-	$(RM) $(target_files) $(temporary_files) split*
+	$(RM) $(target_files) $(temporary_files) split* knock44_output.jpeg
 
 
