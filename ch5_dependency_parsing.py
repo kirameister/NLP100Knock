@@ -144,6 +144,11 @@ def knock43():
 def knock44(sentence_id):
     return_list = []
     sentence = knock41()[sentence_id]
+    for i, chunk in enumerate(sentence):
+        j = sentence[i].dst
+        referring = sentence[i].get_surface()
+        referred  = sentence[j].get_surface()
+        return_list.append((referring, referred))
     return(return_list)
 
 '''
@@ -257,7 +262,16 @@ if(__name__ == '__main__'):
     if(args.knock == 4 or args.knock == 44):
         if(not args.num):
             args.num = 7
-        print(knock44(args.num))
+        if(not args.arg):
+            args.arg = "knock44_output"
+        if(not ( args.arg.endswith("jpg") or args.arg.endswith("jpeg") ) ):
+            args.arg += ".jpeg"
+        returned_list = knock44(int(args.num))
+        print(returned_list)
+        print("Output file: " + args.arg)
+        g = pydot.graph_from_edges(returned_list)
+        g.set_type('digraph')
+        g.write_jpeg(args.arg, prog="dot")
     if(args.knock == 5 or args.knock == 45):
         print(knock45())
     if(args.knock == 6 or args.knock == 46):
