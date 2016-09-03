@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # 第5章: 係り受け解析
 
+from signal import signal, SIGPIPE, SIG_DFL
 import argparse
 import re
 import pydot
+signal(SIGPIPE,SIG_DFL)
 
 
 '''
@@ -169,6 +171,7 @@ def knock44(sentence_id):
 このプログラムの出力をファイルに保存し，以下の事項をUNIXコマンドを用いて確認せよ．
 - コーパス中で頻出する述語と格パターンの組み合わせ
 - 「する」「見る」「与える」という動詞の格パターン（コーパス中で出現頻度の高い順に並べよ）
+-- python ch5_dependency_parsing.py 5 | egrep "^(する|見る|与える)" | sort | uniq -c | sort -nr
 '''
 def knock45():
     return_list = []
@@ -196,7 +199,23 @@ def knock45():
     見る    は を   吾輩は ものを
 '''
 def knock46():
-    return(None)
+    return_list = []
+    for sentence in knock41():
+        for chunk in sentence:
+            if(chunk.morphs[0].pos == u"動詞"):
+                particle_list = []
+                chunk_text_list = []
+                for src_id in chunk.srcs:
+                    for morph in sentence[src_id].morphs:
+                        if(morph.pos == u"助詞"):
+                            particle_list.append(morph.base)
+                            surface_text = re.sub(' ', '', sentence[src_id].get_surface())
+                            chunk_text_list.append(surface_text)
+                if(len(particle_list) > 0):
+                    particles   = " ".join(particle_list)
+                    chunk_texts = " ".join(chunk_text_list)
+                    return_list.append(chunk.morphs[0].base + "\t" + particles + "\t" + chunk_texts)
+    return(return_list)
 
 '''
 47. 機能動詞構文のマイニング
@@ -213,7 +232,8 @@ def knock46():
 - コーパス中で頻出する述語と助詞パターン
 '''
 def knock47():
-    return(None)
+    return_list = []
+    return(return_list)
 
 '''
 48. 名詞から根へのパスの抽出
@@ -292,7 +312,7 @@ if(__name__ == '__main__'):
     if(args.knock == 5 or args.knock == 45):
         print("\n".join(knock45()))
     if(args.knock == 6 or args.knock == 46):
-        print(knock46())
+        print("\n".join(knock46()))
     if(args.knock == 7 or args.knock == 47):
         print(knock47())
     if(args.knock == 8 or args.knock == 48):
