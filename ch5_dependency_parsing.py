@@ -231,8 +231,22 @@ def knock46():
 - コーパス中で頻出する述語（サ変接続名詞+を+動詞）
 - コーパス中で頻出する述語と助詞パターン
 '''
+def left_most_verb(chunk):
+    return(None)
+def check_sahen_setuzoku_plus_wo(chunk):
+    return_value = None
+    for current_morph_id in enumerate(chunk.morphs):
+        if(chunk.morphs[current_morhp_id].pos1 == u"サ変接続" and
+                chunk.morphs[current_morhp_id+1].surface == u"を" and
+                chunk.morphs[current_morhp_id+1].pos == u"助詞"):
+            return_value = chunk.morphs[current_morhp_id].surface + chunk.morphs[current_morhp_id+1].surface
+    return(return_value)
 def knock47():
     return_list = []
+    for sentence in knock41():
+        for chunk in sentence:
+            pass
+
     return(return_list)
 
 '''
