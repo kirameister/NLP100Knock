@@ -291,10 +291,21 @@ def knock47():
     人間という -> ものを -> 見た
     ものを -> 見た
 '''
+def retrieve_dependency(sentence, chunk):
+    return_string = ""
+    while(True):
+        return_string = return_string + " -> " + re.sub(' ', '', chunk.get_surface_without_punctuation())
+        if(chunk.dst == -1):
+            break
+        chunk = sentence[chunk.dst]
+    return_string = re.sub('^ -> ', '', return_string)
+    return(return_string)
 def knock48(sentence_id):
     return_list = []
-    for chunk in knock41()[sentence_id]:
-        pass
+    sentence = knock41()[sentence_id]
+    for chunk in sentence:
+        if(u"名詞" in chunk.get_list_of_pos()):
+            return_list.append(retrieve_dependency(sentence, chunk))
     return(return_list)
 
 '''
@@ -363,7 +374,9 @@ if(__name__ == '__main__'):
     if(args.knock == 7 or args.knock == 47):
         print("\n".join(knock47()))
     if(args.knock == 8 or args.knock == 48):
-        print(knock48())
+        if(not args.num):
+            args.num = 7
+        print("\n".join(knock48(int(args.num))))
     if(args.knock == 9 or args.knock == 49):
         print(knock49())
 
