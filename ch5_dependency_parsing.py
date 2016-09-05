@@ -3,6 +3,7 @@
 
 from signal import signal, SIGPIPE, SIG_DFL
 import argparse
+import copy
 import re
 import pydot
 signal(SIGPIPE,SIG_DFL)
@@ -326,8 +327,58 @@ def knock48(sentence_id):
     Xで -> 始めて -> 人間という -> Y
     Xという -> Y
 '''
-def knock49():
-    return(None)
+def get_string_of_relation_from_2_chunks(sentence_orig, i, j):
+    sentence = copy.deepcopy(sentence_orig)
+    return_value = ""
+    flag = False
+    i2 = i
+    while(True):
+        if(i2 == -1):
+            break
+        if(i2 == j):
+            flag = True
+            break
+        i2 = sentence[i2].dst
+    i2 = i
+    if(flag):
+        sentence[i2].morphs[0].surface = "X"
+        return_value = re.sub(' ', '', sentence[i2].get_surface_without_punctuation())
+        i2 = sentence[i2].dst
+        while(True):
+            if(i2 == j):
+                return_value += " -> " + "Y"
+                break
+            return_value += " -> " + re.sub(' ', '', sentence[i2].get_surface_without_punctuation())
+            i2 = sentence[i2].dst
+    else:
+        sentence[i2].morphs[0].surface = "X"
+        sentence[j].morphs[0].surface = "Y"
+        return_value = re.sub(' ', '', sentence[i2].get_surface_without_punctuation())
+        i3 = sentence[i2].dst
+        while(True):
+            i3 = sentence[i3].dst
+            if(sentence[i3].dst == -1):
+                break
+            return_value += " -> " + re.sub(' ', '', sentence[i3].get_surface_without_punctuation())
+        return_value += " | " + re.sub(' ', '', sentence[j].get_surface_without_punctuation())
+        while(True):
+            j = sentence[j].dst
+            if(sentence[j].dst == -1):
+                break
+            return_value += " -> " + re.sub(' ', '', sentence[j].get_surface_without_punctuation())
+        return_value += " | " + re.sub(' ', '', sentence[i3].get_surface_without_punctuation())
+    return(return_value)
+
+def knock49(sentence_id):
+    return_list = []
+    sentence = knock41()[sentence_id]
+    for i, i_chunk in enumerate(sentence):
+        if(not i_chunk.morphs[0].pos == u"名詞"):
+            continue
+        for j in range(i+1, len(sentence)):
+            if(sentence[j].morphs[0].pos == u"名詞"):
+                return_list.append(get_string_of_relation_from_2_chunks(sentence, i, j))
+    return(return_list)
 
 
 if(__name__ == '__main__'):
@@ -378,5 +429,7 @@ if(__name__ == '__main__'):
             args.num = 7
         print("\n".join(knock48(int(args.num))))
     if(args.knock == 9 or args.knock == 49):
-        print(knock49())
+        if(not args.num):
+            args.num = 7
+        print("\n".join(knock49(int(args.num))))
 
