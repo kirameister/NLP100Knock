@@ -75,6 +75,12 @@ class Chunk(object):
         for morph in self.morphs:
             return_list.append(morph.pos)
         return(return_list)
+    def get_last_particle(self):
+        return_value = None
+        for morph in self.morphs:
+            if(morph.pos == u"助詞"):
+                return_value = morph.surface
+        return(return_value)
 
 def knock41():
     return_sentence_list = []
@@ -232,21 +238,45 @@ def knock46():
 - コーパス中で頻出する述語と助詞パターン
 '''
 def left_most_verb(chunk):
+    for morph in chunk.morphs:
+        if(morph.pos == u"動詞"):
+            return(morph.base)
     return(None)
 def check_sahen_setuzoku_plus_wo(chunk):
     return_value = None
-    for current_morph_id in enumerate(chunk.morphs):
-        if(chunk.morphs[current_morhp_id].pos1 == u"サ変接続" and
-                chunk.morphs[current_morhp_id+1].surface == u"を" and
-                chunk.morphs[current_morhp_id+1].pos == u"助詞"):
-            return_value = chunk.morphs[current_morhp_id].surface + chunk.morphs[current_morhp_id+1].surface
+    for current_morph_id,value in enumerate(chunk.morphs):
+        try:
+            if(chunk.morphs[current_morph_id].pos1 == u"サ変接続" and
+                    chunk.morphs[current_morph_id+1].surface == u"を" and
+                    chunk.morphs[current_morph_id+1].pos == u"助詞"):
+                return_value = chunk.morphs[current_morph_id].surface + chunk.morphs[current_morph_id+1].surface
+        except IndexError:
+            continue
     return(return_value)
+
 def knock47():
     return_list = []
     for sentence in knock41():
         for chunk in sentence:
-            pass
-
+            if(check_sahen_setuzoku_plus_wo(chunk)):
+                verb = left_most_verb(sentence[chunk.dst])
+                if(not verb):
+                    continue
+                else:
+                    verb = check_sahen_setuzoku_plus_wo(chunk) + verb
+                particle_list = []
+                chunk_text_list = []
+                for src_id in sentence[chunk.dst].srcs:
+                    if(chunk == sentence[src_id]):
+                        continue
+                    if(u"助詞" in sentence[src_id].get_list_of_pos()):
+                        particle_list.append(sentence[src_id].get_last_particle())
+                        surface_text = re.sub(' ', '', sentence[src_id].get_surface_without_punctuation())
+                        chunk_text_list.append(surface_text)
+                if(len(particle_list) > 0):
+                    particles   = " ".join(particle_list)
+                    chunk_texts = " ".join(chunk_text_list)
+                    return_list.append(verb + "\t" + particles + "\t" + chunk_texts)
     return(return_list)
 
 '''
@@ -261,8 +291,11 @@ def knock47():
     人間という -> ものを -> 見た
     ものを -> 見た
 '''
-def knock48():
-    return(None)
+def knock48(sentence_id):
+    return_list = []
+    for chunk in knock41()[sentence_id]:
+        pass
+    return(return_list)
 
 '''
 49. 名詞間の係り受けパスの抽出
@@ -328,7 +361,7 @@ if(__name__ == '__main__'):
     if(args.knock == 6 or args.knock == 46):
         print("\n".join(knock46()))
     if(args.knock == 7 or args.knock == 47):
-        print(knock47())
+        print("\n".join(knock47()))
     if(args.knock == 8 or args.knock == 48):
         print(knock48())
     if(args.knock == 9 or args.knock == 49):
