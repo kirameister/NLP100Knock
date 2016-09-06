@@ -354,19 +354,19 @@ def get_string_of_relation_from_2_chunks(sentence_orig, i, j):
         sentence[i2].morphs[0].surface = "X"
         sentence[j].morphs[0].surface = "Y"
         return_value = re.sub(' ', '', sentence[i2].get_surface_without_punctuation())
-        i3 = sentence[i2].dst
+        i2 = sentence[i2].dst
         while(True):
-            i3 = sentence[i3].dst
-            if(sentence[i3].dst == -1):
+            i2 = sentence[i2].dst
+            if(sentence[i2].dst == -1):
                 break
-            return_value += " -> " + re.sub(' ', '', sentence[i3].get_surface_without_punctuation())
+            return_value += " -> " + re.sub(' ', '', sentence[i2].get_surface_without_punctuation())
         return_value += " | " + re.sub(' ', '', sentence[j].get_surface_without_punctuation())
         while(True):
             j = sentence[j].dst
             if(sentence[j].dst == -1):
                 break
             return_value += " -> " + re.sub(' ', '', sentence[j].get_surface_without_punctuation())
-        return_value += " | " + re.sub(' ', '', sentence[i3].get_surface_without_punctuation())
+        return_value += " | " + re.sub(' ', '', sentence[i2].get_surface_without_punctuation())
     return(return_value)
 
 def knock49(sentence_id):
