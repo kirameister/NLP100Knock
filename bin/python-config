@@ -1,4 +1,4 @@
-#!/Users/kira/src/temp/NLP100Knock/bin/python
+#!/Users/kira/src/NLP100Knock/bin/python
 
 import sys
 import getopt

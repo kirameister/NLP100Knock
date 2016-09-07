@@ -40,7 +40,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/kira/src/temp/NLP100Knock"
+VIRTUAL_ENV="../NLP100Knock"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
