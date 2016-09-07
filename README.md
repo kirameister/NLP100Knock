@@ -17,3 +17,13 @@ source ./bin/activate
 make
 ```
 
+## 動作
+
+第六章では以下の様なコマンドにより、Stanford CoreNLP Server を起動する必要があります:
+```
+cd stanford-corenlp-full-2015-12-09/
+java -mx4g -cp "*" edu.stanford.nlp.pipeline.StanfordCoreNLPServer
+```
+
+
+
