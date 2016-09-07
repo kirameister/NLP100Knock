@@ -26,6 +26,9 @@ neko.txt.cabocha: neko.txt
 # Ch6
 nlp.txt:
 	wget http://www.cl.ecei.tohoku.ac.jp/nlp100/data/nlp.txt
+stanford-corenlp-full-2015-12-09.zip:
+	wget http://nlp.stanford.edu/software/stanford-corenlp-full-2015-12-09.zip
+	unzip stanford-corenlp-full-2015-12-09.zip
 
 # Ch7
 artist.json: 
