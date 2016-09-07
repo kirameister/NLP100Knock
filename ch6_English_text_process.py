@@ -2,6 +2,7 @@
 # 第6章: 英語テキストの処理
 
 import argparse
+import re
 
 
 '''
@@ -13,7 +14,13 @@ import argparse
 (. or ; or : or ? or !) → 空白文字 → 英大文字というパターンを文の区切りと見なし，入力された文書を1行1文の形式で出力せよ．
 '''
 def knock50():
-    return(None)
+    return_string = ""
+    pattern = re.compile("[\.;:\?\!]")
+    with open("./nlp.txt", 'r') as f:
+        for line in f:
+            line = re.sub("[\.;:\?\!]", '\n', line)
+            return_string += line
+    return(return_string)
 
 '''
 51. 単語の切り出し
