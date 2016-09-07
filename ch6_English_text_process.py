@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # 第6章: 英語テキストの処理
 
+#from nltk.stem.snowball import SnowballStemmer
+from nltk.stem.porter import *
 import argparse
 import re
 
@@ -27,14 +29,27 @@ def knock50():
 空白を単語の区切りとみなし，50の出力を入力として受け取り，1行1単語の形式で出力せよ．ただし，文の終端では空行を出力せよ．
 '''
 def knock51():
-    return(None)
+    src_string = knock50()
+    return_string = ""
+    for line in src_string:
+        line = re.sub(' ', '\n', line)
+        return_string += line
+    return_string += "\n"
+    return(return_string)
 
 '''
 52. ステミング
 51の出力を入力として受け取り，Porterのステミングアルゴリズムを適用し，単語と語幹をタブ区切り形式で出力せよ． Pythonでは，Porterのステミングアルゴリズムの実装としてstemmingモジュールを利用するとよい．
 '''
 def knock52():
-    return(None)
+    src_string = knock51().split("\n")
+    return_string = ""
+    stemmer = PorterStemmer()
+    for line in src_string:
+        line = line.rstrip()
+        line = stemmer.stem(line)
+        return_string += line + "\n"
+    return(return_string)
 
 '''
 53. Tokenization
