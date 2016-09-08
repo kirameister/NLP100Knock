@@ -2,7 +2,10 @@
 # 第6章: 英語テキストの処理
 
 #from nltk.stem.snowball import SnowballStemmer
+from nltk import PorterStemmer
 from nltk.stem.porter import *
+from pycorenlp import StanfordCoreNLP
+import xml.etree.ElementTree as ET
 import argparse
 import re
 
@@ -56,7 +59,20 @@ def knock52():
 Stanford Core NLPを用い，入力テキストの解析結果をXML形式で得よ．また，このXMLファイルを読み込み，入力テキストを1行1単語の形式で出力せよ．
 '''
 def knock53():
+    nlp = StanfordCoreNLP('http://localhost:9000')
+    src_list = []
+    text = ""
+    with open("./nlp.txt", 'r') as f:
+        for line in f:
+            text += line
+            output = nlp.annotate(line, properties={ 'annotators': 'tokenize,ssplit,pos,depparse,parse', 'outputFormat': 'xml' })
+            output_xml = ET.fromstring(output)
+            #print(output_xml[0][0].tag)
+            print(output)
     return(None)
+    return(output)
+
+
 
 '''
 54. 品詞タグ付け
