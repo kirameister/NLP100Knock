@@ -60,17 +60,14 @@ Stanford Core NLPを用い，入力テキストの解析結果をXML形式で得
 '''
 def knock53():
     nlp = StanfordCoreNLP('http://localhost:9000')
-    src_list = []
-    text = ""
+    return_list = []
     with open("./nlp.txt", 'r') as f:
         for line in f:
-            text += line
-            output = nlp.annotate(line, properties={ 'annotators': 'tokenize,ssplit,pos,depparse,parse', 'outputFormat': 'xml' })
+            output = nlp.annotate(line, properties={'timeout': '50000', 'annotators': 'tokenize,ssplit,pos,depparse,parse', 'outputFormat': 'xml' })
             output_xml = ET.fromstring(output)
-            #print(output_xml[0][0].tag)
-            print(output)
-    return(None)
-    return(output)
+            for word in output_xml.findall(".//word"):
+                return_list.append(word.text)
+    return(return_list)
 
 
 
@@ -79,7 +76,16 @@ def knock53():
 Stanford Core NLPの解析結果XMLを読み込み，単語，レンマ，品詞をタブ区切り形式で出力せよ．
 '''
 def knock54():
-    return(None)
+    nlp = StanfordCoreNLP('http://localhost:9000')
+    return_list = []
+    with open("./nlp.txt", 'r') as f:
+        for line in f:
+            output = nlp.annotate(line, properties={'timeout': '50000', 'annotators': 'tokenize,lemma,ssplit,pos', 'outputFormat': 'xml' })
+            print(output)
+            output_xml = ET.fromstring(output)
+            for word in output_xml.findall(".//token"):
+                pass
+    return(return_list)
 
 '''
 55. 固有表現抽出
