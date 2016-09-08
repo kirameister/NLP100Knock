@@ -16,3 +16,6 @@ enwiki-20150112-400-r10-105752.txt.bz2
 stanford-corenlp-full-2015-12-09.zip
 stanford-corenlp-full-2015-12-09
 .Python
+bin/
+include/
+lib/
