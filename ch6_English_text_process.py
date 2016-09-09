@@ -69,8 +69,6 @@ def knock53():
                 return_list.append(word.text)
     return(return_list)
 
-
-
 '''
 54. 品詞タグ付け
 Stanford Core NLPの解析結果XMLを読み込み，単語，レンマ，品詞をタブ区切り形式で出力せよ．
@@ -81,7 +79,6 @@ def knock54():
     with open("./nlp.txt", 'r') as f:
         for line in f:
             output = nlp.annotate(line, properties={'timeout': '50000', 'annotators': 'tokenize,lemma,ssplit,pos', 'outputFormat': 'xml' })
-            #print(output)
             output_xml = ET.fromstring(output)
             for token in output_xml.findall(".//token"):
                 word  = token.find('word').text
@@ -95,6 +92,19 @@ def knock54():
 入力文中の人名をすべて抜き出せ．
 '''
 def knock55():
+    nlp = StanfordCoreNLP('http://localhost:9000')
+    return_list = []
+    with open("./nlp.txt", 'r') as f:
+        for line in f:
+            output = nlp.annotate(line, properties={'timeout': '50000', 'annotators': 'tokenize,lemma,ssplit,pos', 'outputFormat': 'xml' })
+            output_xml = ET.fromstring(output)
+            for token in output_xml.findall(".//token"):
+                word  = token.find('word').text
+                lemma = token.find('lemma').text
+                pos   = token.find("POS").text
+                if(pos == "NNP"):
+                    return_list.append(word + "\t" + lemma + "\t" + pos)
+    return(return_list)
     return(None)
 
 '''
@@ -146,7 +156,7 @@ if(__name__ == '__main__'):
     if(args.knock == 4 or args.knock == 54):
         print("\n".join(knock54()))
     if(args.knock == 5 or args.knock == 55):
-        print(knock55())
+        print("\n".join(knock55()))
     if(args.knock == 6 or args.knock == 56):
         print(knock56())
     if(args.knock == 7 or args.knock == 57):
