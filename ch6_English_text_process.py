@@ -81,10 +81,13 @@ def knock54():
     with open("./nlp.txt", 'r') as f:
         for line in f:
             output = nlp.annotate(line, properties={'timeout': '50000', 'annotators': 'tokenize,lemma,ssplit,pos', 'outputFormat': 'xml' })
-            print(output)
+            #print(output)
             output_xml = ET.fromstring(output)
-            for word in output_xml.findall(".//token"):
-                pass
+            for token in output_xml.findall(".//token"):
+                word  = token.find('word').text
+                lemma = token.find('lemma').text
+                pos   = token.find("POS").text
+                return_list.append(word + "\t" + lemma + "\t" + pos)
     return(return_list)
 
 '''
@@ -141,7 +144,7 @@ if(__name__ == '__main__'):
     if(args.knock == 3 or args.knock == 53):
         print(knock53())
     if(args.knock == 4 or args.knock == 54):
-        print(knock54())
+        print("\n".join(knock54()))
     if(args.knock == 5 or args.knock == 55):
         print(knock55())
     if(args.knock == 6 or args.knock == 56):
