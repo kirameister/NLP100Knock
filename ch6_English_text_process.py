@@ -106,14 +106,28 @@ def knock55():
                 if((pos == "NNP"or pos == "NNPS") and ner in ["ORGANIZATION", "MISC", "LOCATION", "PERSON"]):
                     return_list.append(word + "\t" + lemma + "\t" + pos + "\t" + ner)
     return(return_list)
-    return(None)
 
 '''
 56. 共参照解析
 Stanford Core NLPの共参照解析の結果に基づき，文中の参照表現（mention）を代表参照表現（representative mention）に置換せよ．ただし，置換するときは，「代表参照表現（参照表現）」のように，元の参照表現が分かるように配慮せよ．
+cf. http://nlp.stanford.edu/software/dcoref.shtml
 '''
 def knock56():
-    return(None)
+    nlp = StanfordCoreNLP('http://localhost:9000')
+    return_list = []
+    with open("./nlp.txt", 'r') as f:
+        for line in f:
+            output = nlp.annotate(line, properties={'timeout': '50000', 'annotators': 'tokenize,lemma,ssplit,pos,parse,dcoref', 'outputFormat': 'xml' })
+            output_xml = ET.fromstring(output)
+            for token in output_xml.findall(".//document/coreference/coreference"):
+                for mention in token.findall("mention"):
+                    attribute = mention.get("representative")
+                    if(attribute):
+                        mentioned = mention.find("text").text
+                    else:
+                        rep_mentioned = mention.find("text").text
+                return_list.append(rep_mentioned + "(" + mentioned + ")")
+    return(return_list)
 
 '''
 57. 係り受け解析
@@ -159,7 +173,7 @@ if(__name__ == '__main__'):
     if(args.knock == 5 or args.knock == 55):
         print("\n".join(knock55()))
     if(args.knock == 6 or args.knock == 56):
-        print(knock56())
+        print("\n".join(knock56()))
     if(args.knock == 7 or args.knock == 57):
         print(knock57())
     if(args.knock == 8 or args.knock == 58):
