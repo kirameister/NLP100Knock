@@ -96,14 +96,15 @@ def knock55():
     return_list = []
     with open("./nlp.txt", 'r') as f:
         for line in f:
-            output = nlp.annotate(line, properties={'timeout': '50000', 'annotators': 'tokenize,lemma,ssplit,pos', 'outputFormat': 'xml' })
+            output = nlp.annotate(line, properties={'timeout': '50000', 'annotators': 'tokenize,lemma,ssplit,pos,ner', 'outputFormat': 'xml' })
             output_xml = ET.fromstring(output)
             for token in output_xml.findall(".//token"):
                 word  = token.find('word').text
                 lemma = token.find('lemma').text
                 pos   = token.find("POS").text
-                if(pos == "NNP"):
-                    return_list.append(word + "\t" + lemma + "\t" + pos)
+                ner   = token.find("NER").text
+                if((pos == "NNP"or pos == "NNPS") and ner in ["ORGANIZATION", "MISC", "LOCATION", "PERSON"]):
+                    return_list.append(word + "\t" + lemma + "\t" + pos + "\t" + ner)
     return(return_list)
     return(None)
 
