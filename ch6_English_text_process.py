@@ -165,7 +165,34 @@ Stanford Core NLPの係り受け解析の結果（collapsed-dependencies）に�
 - 目的語: 述語からdobj関係にある子（dependent）
 '''
 def knock58():
-    return(None)
+    nlp = StanfordCoreNLP('http://localhost:9000')
+    return_list = []
+    with open("./nlp.txt", 'r') as f:
+        for line in f:
+            output = nlp.annotate(line, properties={'timeout': '50000', 'annotators': 'tokenize,lemma,ssplit,pos,parse', 'outputFormat': 'xml' })
+            output_xml = ET.fromstring(output)
+            for dependency in output_xml.findall(".//dependencies[@type='collapsed-dependencies']"):
+                dobjs  = {}
+                nsubjs = {}
+                # search for the subj and dobj references
+                for dep in dependency.findall(".//dep"):
+                    type_name = dep.get("type")
+                    governor = dep.find("governor").text
+                    governor_id = dep.find("governor").get("idx")
+                    dependent = dep.find("dependent").text
+                    dependent_id = dep.find("dependent").get("idx")
+                    if(type_name == "punct"):
+                        continue
+                    #print(governor +"("governor_id+")" + " -"+type_name+"-> " + dependent +"("+dependent_id+")")
+                    if(type_name == "nsubj"):
+                        nsubjs[governor_id] = governor + "\t" + dependent
+                    if(type_name == "dobj"):
+                        dobjs[governor_id]  = dependent
+                # extract subj->verb->dobj tuples
+                for gov_id, sub_verb_value in nsubjs.items():
+                    if(dobjs.get(gov_id, None)):
+                        return_list.append(nsubjs[gov_id] + "\t" + dobjs[gov_id])
+    return(return_list)
 
 '''
 59. S式の解析
@@ -210,7 +237,7 @@ if(__name__ == '__main__'):
         g.set_type('digraph')
         g.write_jpeg(args.arg, prog="dot")
     if(args.knock == 8 or args.knock == 58):
-        print(knock58())
+        print("\n".join(knock58()))
     if(args.knock == 9 or args.knock == 59):
         print(knock59())
 
