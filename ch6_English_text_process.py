@@ -5,9 +5,12 @@
 from nltk import PorterStemmer
 from nltk.stem.porter import *
 from pycorenlp import StanfordCoreNLP
-import xml.etree.ElementTree as ET
+from signal import signal, SIGPIPE, SIG_DFL
 import argparse
+import pydot
 import re
+import xml.etree.ElementTree as ET
+signal(SIGPIPE,SIG_DFL)
 
 
 '''
@@ -133,8 +136,26 @@ def knock56():
 57. 係り受け解析
 Stanford Core NLPの係り受け解析の結果（collapsed-dependencies）を有向グラフとして可視化せよ．可視化には，係り受け木をDOT言語に変換し，Graphvizを用いるとよい．また，Pythonから有向グラフを直接的に可視化するには，pydotを使うとよい．
 '''
-def knock57():
-    return(None)
+def knock57(number):
+    nlp = StanfordCoreNLP('http://localhost:9000')
+    return_list = []
+    with open("./nlp.txt", 'r') as f:
+        for i, line in enumerate(f):
+            # In order to avoid creating too big graph, following lines limit the input text to be specified linei in the input text. 
+            if(i != number):
+                continue
+            output = nlp.annotate(line, properties={'timeout': '50000', 'annotators': 'tokenize,lemma,ssplit,pos,parse', 'outputFormat': 'xml' })
+            output_xml = ET.fromstring(output)
+            for dependency in output_xml.findall(".//dependencies[@type='collapsed-dependencies']"):
+                for dep in dependency.findall(".//dep"):
+                    type_name = dep.get("type")
+                    governor = dep.find("governor").text
+                    dependent = dep.find("dependent").text
+                    print(governor + " -"+type_name+"-> " + dependent)
+                    if(type_name == "punct"):
+                        continue
+                    return_list.append((governor, dependent))
+    return(return_list)
 
 '''
 58. タプルの抽出
@@ -158,6 +179,7 @@ if(__name__ == '__main__'):
     parser = argparse.ArgumentParser(description='Ch 6')
     parser.add_argument('knock', type=int, help="Number of knock")
     parser.add_argument('-a', '--arg', help="Additional argument where appropriate")
+    parser.add_argument('-n', '--number', help="Natural number")
     args = parser.parse_args()
 
     if(args.knock == 0 or args.knock == 50):
@@ -175,7 +197,18 @@ if(__name__ == '__main__'):
     if(args.knock == 6 or args.knock == 56):
         print("\n".join(knock56()))
     if(args.knock == 7 or args.knock == 57):
-        print(knock57())
+        if(not args.arg):
+            args.arg = "knock57_output"
+        if(not ( args.arg.endswith("jpg") or args.arg.endswith("jpeg") ) ):
+            args.arg += ".jpeg"
+        if(not args.number):
+            args.number = 3
+        return_list = knock57(int(args.number))
+        print(return_list)
+        print("Output file: " + args.arg)
+        g = pydot.graph_from_edges(return_list)
+        g.set_type('digraph')
+        g.write_jpeg(args.arg, prog="dot")
     if(args.knock == 8 or args.knock == 58):
         print(knock58())
     if(args.knock == 9 or args.knock == 59):
