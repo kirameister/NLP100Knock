@@ -198,8 +198,16 @@ def knock58():
 59. S式の解析
 Stanford Core NLPの句構造解析の結果（S式）を読み込み，文中のすべての名詞句（NP）を表示せよ．入れ子になっている名詞句もすべて表示すること．
 '''
-def knock59():
-    return(None)
+def knock59(number):
+    nlp = StanfordCoreNLP('http://localhost:9000')
+    return_list = []
+    with open("./nlp.txt", 'r') as f:
+        for i, line in enumerate(f):
+            if(i != number):
+                continue
+            output = nlp.annotate(line, properties={'timeout': '50000', 'annotators': 'parse', 'outputFormat': 'xml' })
+            output_xml = ET.fromstring(output)
+    return(return_list)
 
 
 if(__name__ == '__main__'):
@@ -239,5 +247,7 @@ if(__name__ == '__main__'):
     if(args.knock == 8 or args.knock == 58):
         print("\n".join(knock58()))
     if(args.knock == 9 or args.knock == 59):
-        print(knock59())
+        if(not args.number):
+            args.number = 3
+        print("\n".join(knock59(args.number)))
 
