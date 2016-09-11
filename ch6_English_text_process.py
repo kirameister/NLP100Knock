@@ -201,12 +201,32 @@ Stanford Core NLPの句構造解析の結果（S式）を読み込み，文中�
 def knock59(number):
     nlp = StanfordCoreNLP('http://localhost:9000')
     return_list = []
+    pattern = re.compile("^(\s*)(.*)")
     with open("./nlp.txt", 'r') as f:
         for i, line in enumerate(f):
             if(i != number):
                 continue
             output = nlp.annotate(line, properties={'timeout': '50000', 'annotators': 'parse', 'outputFormat': 'xml' })
             output_xml = ET.fromstring(output)
+            parsed_lines = output_xml.find(".//parse").text.split("\n")
+            for i in range(len(parsed_lines)):
+                re_result_i = pattern.search(parsed_lines[i].rstrip("\n"))
+                space_len_i = len(re_result_i.group(1))
+                content_i = re_result_i.group(2)
+                if(content_i.startswith("(NP")):
+                    current_NP = ""
+                    for j in range(i, len(parsed_lines)):
+                        if(i == j):
+                            current_NP = content_i
+                            continue
+                        re_result_j = pattern.search(parsed_lines[j].rstrip("\n"))
+                        space_len_j = len(re_result_j.group(1))
+                        content_j = re_result_j.group(2)
+                        if(space_len_i >= space_len_j):
+                            break
+                        else:
+                            current_NP += content_j.strip("\n")
+                    return_list.append(current_NP)
     return(return_list)
 
 
