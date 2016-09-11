@@ -2,6 +2,9 @@
 # 第7章: データベース
 
 import argparse
+import json
+import redis
+import codecs
 
 
 '''
@@ -40,21 +43,33 @@ artist.json.gzのデータをKey-Value-Store (KVS) およびドキュメント�
 Key-Value-Store (KVS) を用い，アーティスト名（name）から活動場所（area）を検索するためのデータベースを構築せよ．
 '''
 def knock60():
-    return(None)
+    r = redis.Redis(host='127.0.0.1', port=6379, db=0)
+    with codecs.open("artist.json", 'r', 'utf-8') as fd:
+        for line in fd:
+            data = json.loads(line)
+            if("name" in data and "area" in data):
+                r.set(data["name"], data["area"])
+    return("completed")
 
 '''
 61. KVSの検索
 60で構築したデータベースを用い，特定の（指定された）アーティストの活動場所を取得せよ．
 '''
 def knock61():
-    return(None)
+    return_dict = {}
+    r = redis.Redis(host='127.0.0.1', port=6379, db=0)
+    for key in r.scan_iter():
+        return_dict[key] = r.get(key)
+    return(return_dict)
 
 '''
 62. KVS内の反復処理
 60で構築したデータベースを用い，活動場所が「Japan」となっているアーティスト数を求めよ．
 '''
-def knock62():
-    return(None)
+def knock62(artist_name):
+    return_string = ""
+    r = redis.Redis(host='127.0.0.1', port=6379, db=0)
+    return(r.get(artist_name))
 
 '''
 63. オブジェクトを値に格納したKVS
@@ -115,9 +130,13 @@ if(__name__ == '__main__'):
     if(args.knock == 0 or args.knock == 60):
         print(knock60())
     if(args.knock == 1 or args.knock == 61):
-        print(knock61())
+        return_dict = knock61()
+        for key,value in return_dict.items():
+            print(key.decode("utf-8") + "\t" + value.decode("utf-8"))
     if(args.knock == 2 or args.knock == 62):
-        print(knock62())
+        if(not args.arg):
+            args.arg = u"井上陽水"
+        print(knock62(args.arg).decode("utf-8"))
     if(args.knock == 3 or args.knock == 63):
         print(knock63())
     if(args.knock == 4 or args.knock == 64):
