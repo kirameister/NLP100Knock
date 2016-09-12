@@ -55,28 +55,38 @@ def knock60():
 61. KVSの検索
 60で構築したデータベースを用い，特定の（指定された）アーティストの活動場所を取得せよ．
 '''
-def knock61():
+def knock61(artist_name):
     return_dict = {}
     r = redis.Redis(host='127.0.0.1', port=6379, db=0)
-    for key in r.scan_iter():
-        return_dict[key] = r.get(key)
-    return(return_dict)
+    return(r.get(artist_name))
 
 '''
 62. KVS内の反復処理
 60で構築したデータベースを用い，活動場所が「Japan」となっているアーティスト数を求めよ．
 '''
-def knock62(artist_name):
-    return_string = ""
+def knock62(location):
+    return_list = []
     r = redis.Redis(host='127.0.0.1', port=6379, db=0)
-    return(r.get(artist_name))
+    print("location: " + location)
+    for key in r.scan_iter():
+        if(r.get(key).decode("utf-8") == location):
+            return_list.append(key.decode("utf-8"))
+    return(return_list)
 
 '''
 63. オブジェクトを値に格納したKVS
 KVSを用い，アーティスト名（name）からタグと被タグ数（タグ付けされた回数）のリストを検索するためのデータベースを構築せよ．さらに，ここで構築したデータベースを用い，アーティスト名からタグと被タグ数を検索せよ．
 '''
 def knock63():
-    return(None)
+    r = redis.Redis(host='127.0.0.1', port=6379, db=0)
+    with codecs.open("artist.json", 'r', 'utf-8') as fd:
+        for line in fd:
+            data = json.loads(line)
+            if("tags" in data):
+                count = data["tags"][0]["count"]
+                value = data["tags"][0]["value"]
+                print(data["name"] + "\t" + str(count) + "\t" + value)
+    return("completed")
 
 '''
 64. MongoDBの構築
@@ -130,13 +140,13 @@ if(__name__ == '__main__'):
     if(args.knock == 0 or args.knock == 60):
         print(knock60())
     if(args.knock == 1 or args.knock == 61):
-        return_dict = knock61()
-        for key,value in return_dict.items():
-            print(key.decode("utf-8") + "\t" + value.decode("utf-8"))
-    if(args.knock == 2 or args.knock == 62):
         if(not args.arg):
             args.arg = u"井上陽水"
-        print(knock62(args.arg).decode("utf-8"))
+        print(knock61(args.arg).decode("utf-8"))
+    if(args.knock == 2 or args.knock == 62):
+        if(not args.arg):
+            args.arg = u"Japan"
+        print("\n".join(knock62(args.arg)))
     if(args.knock == 3 or args.knock == 63):
         print(knock63())
     if(args.knock == 4 or args.knock == 64):
