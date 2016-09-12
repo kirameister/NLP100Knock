@@ -31,5 +31,7 @@ cd stanford-corenlp-full-2015-12-09/
 java -mx4g -cp "*" edu.stanford.nlp.pipeline.StanfordCoreNLPServer
 ```
 
+第七章の前半部 (knock60 から knock63 まで) では NoSQL DB として Redis を使用しています。スクリプトを起動する前にローカル環境で Redis のサーバープロセスを起動させておく必要があります (IP アドレス: 127.0.0.1、ポート: 6379)。
+
 
 
