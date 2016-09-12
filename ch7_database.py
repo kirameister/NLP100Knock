@@ -77,16 +77,16 @@ def knock62(location):
 63. オブジェクトを値に格納したKVS
 KVSを用い，アーティスト名（name）からタグと被タグ数（タグ付けされた回数）のリストを検索するためのデータベースを構築せよ．さらに，ここで構築したデータベースを用い，アーティスト名からタグと被タグ数を検索せよ．
 '''
-def knock63():
+def knock63(artist_name):
+    return_list = []
     r = redis.Redis(host='127.0.0.1', port=6379, db=0)
+    r.flushall()
     with codecs.open("artist.json", 'r', 'utf-8') as fd:
         for line in fd:
             data = json.loads(line)
             if("tags" in data):
-                count = data["tags"][0]["count"]
-                value = data["tags"][0]["value"]
-                print(data["name"] + "\t" + str(count) + "\t" + value)
-    return("completed")
+                r.rpush(data["name"], data["tags"])
+    return(r.lrange(artist_name, 0, -1))
 
 '''
 64. MongoDBの構築
@@ -148,7 +148,10 @@ if(__name__ == '__main__'):
             args.arg = u"Japan"
         print("\n".join(knock62(args.arg)))
     if(args.knock == 3 or args.knock == 63):
-        print(knock63())
+        if(not args.arg):
+            args.arg = u"井上陽水"
+        for value in knock63(args.arg):
+            print(value.decode("utf-8"))
     if(args.knock == 4 or args.knock == 64):
         print(knock64())
     if(args.knock == 5 or args.knock == 65):
