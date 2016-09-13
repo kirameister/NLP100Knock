@@ -145,9 +145,17 @@ def knock66():
 '''
 67. 複数のドキュメントの取得
 特定の（指定した）別名を持つアーティストを検索せよ．
+
+use ch7
+db.knock64.find( aliases: $elemMatch: {name: "女王"} )
 '''
 def knock67(artist_name):
-    return(None)
+    return_list = []
+    mongo_client = MongoClient('127.0.0.1', 27017)
+    db = mongo_client["ch7"]
+    for value in  db.knock64.find( {"aliases": {"$elemMatch": {"name": artist_name} }}):
+        return_list.append(value["name"])
+    return(return_list)
 
 '''
 68. ソート
@@ -193,7 +201,9 @@ if(__name__ == '__main__'):
     if(args.knock == 6 or args.knock == 66):
         print(knock66())
     if(args.knock == 7 or args.knock == 67):
-        print(knock67())
+        if(not args.arg):
+            args.arg = u"女王"
+        print("\n".join(knock67(args.arg)))
     if(args.knock == 8 or args.knock == 68):
         print(knock68())
     if(args.knock == 9 or args.knock == 69):
