@@ -186,7 +186,6 @@ if(__name__ == '__main__'):
     if(args.knock == 5 or args.knock == 65):
         for value in knock65():
             print(str(value))
-        #print("\n".join(knock65()))
     if(args.knock == 6 or args.knock == 66):
         print(knock66())
     if(args.knock == 7 or args.knock == 67):
