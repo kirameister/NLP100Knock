@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 # 第7章: データベース
 
+from pymongo import MongoClient
 import argparse
-import json
-import redis
 import codecs
+import json
+import pymongo
+import redis
 
 
 '''
@@ -93,18 +95,45 @@ def knock63(artist_name):
 アーティスト情報（artist.json.gz）をデータベースに登録せよ．さらに，次のフィールドでインデックスを作成せよ: name, aliases.name, tags.value, rating.value
 '''
 def knock64():
-    return(None)
+    mongo_client = MongoClient('127.0.0.1', 27017)
+    db = mongo_client["ch7"]
+    # remove all the existing documents (this may not be required..)
+    print("Deleting the exisitng documents..")
+    db.knock64.delete_many({})
+    print("Inserting documents to the collection (table)..")
+    with codecs.open("artist.json", 'r', 'utf-8') as fd:
+        for line in fd:
+            data = json.loads(line)
+            db_post_result = db.knock64.insert_one(data)
+            print("inserted_result: " + str(db_post_result))
+    print("Creating indexes for name, aliases.name, tags.value, and rating.value..")
+    db.knock64.create_index([ ('name', pymongo.ASCENDING) ])
+    db.knock64.create_index([ ('aliases.name', pymongo.ASCENDING) ])
+    db.knock64.create_index([ ('tags.value', pymongo.ASCENDING) ])
+    db.knock64.create_index([ ('rating.value', pymongo.ASCENDING) ])
+    return(list(db.knock64.index_information()))
 
 '''
 65. MongoDBの検索
 MongoDBのインタラクティブシェルを用いて，"Queen"というアーティストに関する情報を取得せよ．さらに，これと同様の処理を行うプログラムを実装せよ．
+
+use ch7;
+db.knock64.find({name: "Queen"})
 '''
 def knock65():
-    return(None)
+    return_list = []
+    mongo_client = MongoClient('127.0.0.1', 27017)
+    db = mongo_client["ch7"]
+    for value in db.knock64.find({"name": "Queen"}):
+        return_list.append(value)
+    return(return_list)
 
 '''
 66. 検索件数の取得
 MongoDBのインタラクティブシェルを用いて，活動場所が「Japan」となっているアーティスト数を求めよ．
+
+use ch7
+db.knock64.count({area: "Japan"})
 '''
 def knock66():
     return(None)
@@ -155,7 +184,9 @@ if(__name__ == '__main__'):
     if(args.knock == 4 or args.knock == 64):
         print(knock64())
     if(args.knock == 5 or args.knock == 65):
-        print(knock65())
+        for value in knock65():
+            print(str(value))
+        #print("\n".join(knock65()))
     if(args.knock == 6 or args.knock == 66):
         print(knock66())
     if(args.knock == 7 or args.knock == 67):
