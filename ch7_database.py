@@ -136,13 +136,17 @@ use ch7
 db.knock64.count({area: "Japan"})
 '''
 def knock66():
-    return(None)
+    return_value = 0
+    mongo_client = MongoClient('127.0.0.1', 27017)
+    db = mongo_client["ch7"]
+    return_value = db.knock64.count({"area": "Japan"})
+    return(return_value)
 
 '''
 67. 複数のドキュメントの取得
 特定の（指定した）別名を持つアーティストを検索せよ．
 '''
-def knock67():
+def knock67(artist_name):
     return(None)
 
 '''
