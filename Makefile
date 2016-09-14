@@ -36,8 +36,9 @@ artist.json:
 	gzip -d artist.json.gz
 
 # Ch8
-rt-polaritydata.README.1.0.txt:
-	wget http://www.cs.cornell.edu/people/pabo/movie-review-data/rt-polaritydata.README.1.0.txt
+rt-polaritydata.tar.gz:
+	wget http://www.cs.cornell.edu/people/pabo/movie-review-data/rt-polaritydata.tar.gz
+	tar -xvzf rt-polaritydata.tar.gz
 
 # Ch9
 enwiki-20150112-400-r10-105752.txt.bz2:
