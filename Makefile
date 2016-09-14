@@ -40,7 +40,7 @@ rt-polaritydata.tar.gz:
 	wget http://www.cs.cornell.edu/people/pabo/movie-review-data/rt-polaritydata.tar.gz
 	tar -xvzf rt-polaritydata.tar.gz
 
-# Ch9
+# Ch9 (and Ch10)
 enwiki-20150112-400-r10-105752.txt.bz2:
 	wget http://www.cl.ecei.tohoku.ac.jp/nlp100/data/enwiki-20150112-400-r10-105752.txt.bz2
 enwiki-20150112-400-r10-105752.txt: enwiki-20150112-400-r10-105752.txt.bz2
