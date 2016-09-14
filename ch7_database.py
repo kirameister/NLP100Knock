@@ -219,7 +219,6 @@ if(__name__ == '__main__'):
             args.arg = u"dance"
         for value in knock68(args.arg):
             print(value)
-        #print(knock68(args.arg))
     if(args.knock == 9 or args.knock == 69):
         print(knock69())
 
