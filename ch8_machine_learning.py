@@ -3,7 +3,9 @@
 
 import argparse
 import codecs
+import nltk
 import random
+import re
 
 
 '''
@@ -39,11 +41,24 @@ def knock70():
 71. ストップワード
 英語のストップワードのリスト（ストップリスト）を適当に作成せよ．さらに，引数に与えられた単語（文字列）がストップリストに含まれている場合は真，それ以外は偽を返す関数を実装せよ．さらに，その関数に対するテストを記述せよ．
 '''
-def check_stopword(string):
-    stop_words = set('.', '.')
+def check_stopword(word, stop_words_set):
+    word = word.lower()
+    if(word in stop_words_set):
+        return(True)
+    else:
+        return(False)
 
-def knock71():
-    return(None)
+def knock71(text):
+    stop_words = set(nltk.corpus.stopwords.words("english"))
+    text = re.sub('\.', ' .', text)
+    text = re.sub('\,', ' ,', text)
+    words = text.split(' ')
+    for word in words:
+        if(check_stopword(word, stop_words)):
+            print(word + " is a stopword")
+        else:
+            print(word + " is NOT a stopword")
+    return("completed")
 
 '''
 72. 素性抽出
@@ -111,7 +126,9 @@ if(__name__ == '__main__'):
     if(args.knock == 0 or args.knock == 70):
         print(knock70())
     if(args.knock == 1 or args.knock == 71):
-        print(knock71())
+        if(not args.arg):
+            args.arg = "This is a pen."
+        print(knock71(args.arg))
     if(args.knock == 2 or args.knock == 72):
         print(knock72())
     if(args.knock == 3 or args.knock == 73):
