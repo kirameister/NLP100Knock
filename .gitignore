@@ -21,3 +21,5 @@ include/
 lib/
 share/
 knock57_output.jpeg
+rt-polaritydata.tar.gz
+rt-polaritydata
