@@ -2,15 +2,17 @@
 # 第8章: 機械学習
 
 import argparse
+import codecs
+import random
 
 
 '''
-本章では，Bo Pang氏とLillian Lee氏が公開しているMovie Review Dataのsentence polarity dataset v1.0を用い，文を肯定的（ポジティブ）もしくは否定的（ネガティブ）に分類するタスク（極性分析）に取り組む．
+本章では，Bo Pang氏とLillian Lee氏が公開しているMovie Review Data (http://www.cs.cornell.edu/people/pabo/movie-review-data/) のsentence polarity dataset v1.0 (http://www.cs.cornell.edu/people/pabo/movie-review-data/rt-polaritydata.README.1.0.txt) を用い，文を肯定的（ポジティブ）もしくは否定的（ネガティブ）に分類するタスク（極性分析）に取り組む．
 '''
 
 '''
 70. データの入手・整形
-文に関する極性分析の正解データを用い，以下の要領で正解データ（sentiment.txt）を作成せよ．
+文に関する極性分析の正解データ (http://www.cs.cornell.edu/people/pabo/movie-review-data/rt-polaritydata.tar.gz) を用い，以下の要領で正解データ（sentiment.txt）を作成せよ．
 
 rt-polarity.posの各行の先頭に"+1 "という文字列を追加する（極性ラベル"+1"とスペースに続けて肯定的な文の内容が続く）
 rt-polarity.negの各行の先頭に"-1 "という文字列を追加する（極性ラベル"-1"とスペースに続けて否定的な文の内容が続く）
@@ -18,7 +20,20 @@ rt-polarity.negの各行の先頭に"-1 "という文字列を追加する（極
 sentiment.txtを作成したら，正例（肯定的な文）の数と負例（否定的な文）の数を確認せよ．
 '''
 def knock70():
-    return(None)
+    pos_list = []
+    neg_list = []
+    with codecs.open("./rt-polaritydata/rt-polarity.pos", 'r', "latin-1") as fd:
+        for line in fd:
+            pos_list.append("+"+line)
+    with codecs.open("./rt-polaritydata/rt-polarity.neg", 'r', "latin-1") as fd:
+        for line in fd:
+            neg_list.append("-"+line)
+    dst_list = pos_list + neg_list
+    random.shuffle(dst_list)
+    with codecs.open("./sentiment.txt", 'w', "utf-8") as fd:
+        for line in dst_list:
+            fd.write(line)
+    return("pos: " + str(len(pos_list)) + "\t neg: " + str(len(neg_list)))
 
 '''
 71. ストップワード
