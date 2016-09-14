@@ -147,22 +147,32 @@ def knock66():
 特定の（指定した）別名を持つアーティストを検索せよ．
 
 use ch7
-db.knock64.find( aliases: $elemMatch: {name: "女王"} )
+db.knock64.find({ aliases: { $elemMatch: {name:"女王"}} })
 '''
 def knock67(artist_name):
     return_list = []
     mongo_client = MongoClient('127.0.0.1', 27017)
     db = mongo_client["ch7"]
-    for value in  db.knock64.find( {"aliases": {"$elemMatch": {"name": artist_name} }}):
+    for value in db.knock64.find( {"aliases": {"$elemMatch": {"name": artist_name} }}):
         return_list.append(value["name"])
     return(return_list)
 
 '''
 68. ソート
 "dance"というタグを付与されたアーティストの中でレーティングの投票数が多いアーティスト・トップ10を求めよ．
+
+use ch7
+db.knock64.find({ tags: { $elemMatch: {value:"dance"}} }).sort({"rating.count":-1})
 '''
-def knock68():
-    return(None)
+def knock68(tag_name):
+    return_list = []
+    mongo_client = MongoClient('127.0.0.1', 27017)
+    db = mongo_client["ch7"]
+    for value in db.knock64.find( {"tags":{"$elemMatch": {"value": tag_name}}} ).sort(("rating.count"), pymongo.DESCENDING):
+        count = value.get("rating", {}).get("count", 0)
+        name = value["name"]
+        return_list.append(str(count) + "\t" + str(name))
+    return(return_list[0:9])
 
 '''
 69. Webアプリケーションの作成
@@ -205,7 +215,11 @@ if(__name__ == '__main__'):
             args.arg = u"女王"
         print("\n".join(knock67(args.arg)))
     if(args.knock == 8 or args.knock == 68):
-        print(knock68())
+        if(not args.arg):
+            args.arg = u"dance"
+        for value in knock68(args.arg):
+            print(value)
+        #print(knock68(args.arg))
     if(args.knock == 9 or args.knock == 69):
         print(knock69())
 
