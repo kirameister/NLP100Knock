@@ -26,10 +26,10 @@ def knock70():
     neg_list = []
     with codecs.open("./rt-polaritydata/rt-polarity.pos", 'r', "latin-1") as fd:
         for line in fd:
-            pos_list.append("+"+line)
+            pos_list.append("+ "+line)
     with codecs.open("./rt-polaritydata/rt-polarity.neg", 'r', "latin-1") as fd:
         for line in fd:
-            neg_list.append("-"+line)
+            neg_list.append("- "+line)
     dst_list = pos_list + neg_list
     random.shuffle(dst_list)
     with codecs.open("./sentiment.txt", 'w', "utf-8") as fd:
@@ -64,8 +64,45 @@ def knock71(text):
 72. 素性抽出
 極性分析に有用そうな素性を各自で設計し，学習データから素性を抽出せよ．素性としては，レビューからストップワードを除去し，各単語をステミング処理したものが最低限のベースラインとなるであろう．
 '''
+def knock72_imp2(file_name):
+    # This function produces stemmed words, word-based N-gram, and char-based N-gram as feature input
+    pass
+
+def knock72_imp1(file_name):
+    # This function takes both stemmed words and word-based N-gram as feature input
+    stop_words = set(nltk.corpus.stopwords.words("english"))
+    stemmer = nltk.stem.porter.PorterStemmer()
+    dict_pos = {}
+    dict_neg = {}
+    with codecs.open(file_name, 'r', "utf-8") as fd:
+        for line in fd:
+            pass
+
+def knock72_baseline(file_name):
+    # This function only takes the stemmed words as feature input
+    stop_words = set(nltk.corpus.stopwords.words("english"))
+    stemmer = nltk.stem.porter.PorterStemmer()
+    dict_pos = {}
+    dict_neg = {}
+    with codecs.open(file_name, 'r', "utf-8") as fd:
+        for line in fd:
+            line = re.sub('\.', '', line)
+            line = re.sub('\,', '', line)
+            words = line.split(' ')
+            flag = words.pop(0)
+            for word in words:
+                if(not check_stopword(word, stop_words)):
+                    word = stemmer.stem(word)
+                    if(flag == u"+"):
+                        dict_pos[word] = dict_pos.get(word, 0) + 1
+                    elif(flag == u"-"):
+                        dict_neg[word] = dict_neg.get(word, 0) + 1
+    dict_pos = sorted(dict_pos.items(), key=lambda x:x[1], reverse=True)
+    dict_neg = sorted(dict_neg.items(), key=lambda x:x[1], reverse=True)
+    return(dict_pos, dict_neg)
+
 def knock72():
-    return(None)
+    return(knock72_baseline("./sentiment.txt"))
 
 '''
 73. 学習
