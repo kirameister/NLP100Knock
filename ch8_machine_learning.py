@@ -64,10 +64,29 @@ def knock71(text):
 72. 素性抽出
 極性分析に有用そうな素性を各自で設計し，学習データから素性を抽出せよ．素性としては，レビューからストップワードを除去し，各単語をステミング処理したものが最低限のベースラインとなるであろう．
 '''
+def n_gram(n, mode, string, delimiter):
+    return_ngram = list()
+
+    if(mode.startswith("w")):
+        string_list = string.split() # word-based n-gram
+    else:
+        string_list = list(string) # char-based n-gram
+    for i in range(len(string_list)-n+1):
+        temp_string = ""
+        for j in range(0, n):
+            if(temp_string == ""):
+                temp_string = string_list[i+j]
+            else:
+                temp_string = temp_string + delimiter + string_list[i+j]
+        return_ngram.append(temp_string)
+    return(return_ngram)
+
 def knock72_imp2(file_name):
     # This function produces stemmed words, word-based N-gram, and char-based N-gram as feature input
     stop_words = set(nltk.corpus.stopwords.words("english"))
     stemmer = nltk.stem.porter.PorterStemmer()
+    dict_pos = {}
+    dict_neg = {}
     pass
 
 def knock72_imp1(file_name):
@@ -78,7 +97,29 @@ def knock72_imp1(file_name):
     dict_neg = {}
     with codecs.open(file_name, 'r', "utf-8") as fd:
         for line in fd:
-            pass
+            line = re.sub('\.', '', line)
+            line = re.sub('\,', '', line)
+            words = line.split(' ')
+            flag = words.pop(0)
+            n_gram_input = ""
+            for word in words:
+                if(not check_stopword(word, stop_words)):
+                    word = stemmer.stem(word)
+                    n_gram_input += " " + word
+                    if(flag == u"+"):
+                        dict_pos[word] = dict_pos.get(word, 0) + 1
+                    elif(flag == u"-"):
+                        dict_neg[word] = dict_neg.get(word, 0) + 1
+            # Obtain and process n-gram, tri-gram for simplicity
+            n_gram_result = n_gram(3, 'w', n_gram_input, "__")
+            for token in n_gram_result:
+                if(flag == u"+"):
+                    dict_pos[token] = dict_pos.get(token, 0) + 1
+                elif(flag == u"-"):
+                    dict_neg[token] = dict_neg.get(token, 0) + 1
+    dict_pos = sorted(dict_pos.items(), key=lambda x:x[1], reverse=True)
+    dict_neg = sorted(dict_neg.items(), key=lambda x:x[1], reverse=True)
+    return(dict_pos, dict_neg)
 
 def knock72_baseline(file_name):
     # This function only takes the stemmed words as feature input
@@ -104,6 +145,7 @@ def knock72_baseline(file_name):
     return(dict_pos, dict_neg)
 
 def knock72():
+    return(knock72_imp1("./sentiment.txt"))
     return(knock72_baseline("./sentiment.txt"))
 
 '''
