@@ -66,6 +66,8 @@ def knock71(text):
 '''
 def knock72_imp2(file_name):
     # This function produces stemmed words, word-based N-gram, and char-based N-gram as feature input
+    stop_words = set(nltk.corpus.stopwords.words("english"))
+    stemmer = nltk.stem.porter.PorterStemmer()
     pass
 
 def knock72_imp1(file_name):
