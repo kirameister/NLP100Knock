@@ -66,7 +66,6 @@ def knock71(text):
 '''
 def n_gram(n, mode, string, delimiter):
     return_ngram = list()
-
     if(mode.startswith("w")):
         string_list = string.split() # word-based n-gram
     else:
@@ -110,8 +109,8 @@ def knock72_imp1(file_name):
                         dict_pos[word] = dict_pos.get(word, 0) + 1
                     elif(flag == u"-"):
                         dict_neg[word] = dict_neg.get(word, 0) + 1
-            # Obtain and process n-gram, tri-gram for simplicity
-            n_gram_result = n_gram(3, 'w', n_gram_input, "__")
+            # Obtain and process n-gram, bi-gram for simplicity
+            n_gram_result = n_gram(2, 'w', n_gram_input, "__")
             for token in n_gram_result:
                 if(flag == u"+"):
                     dict_pos[token] = dict_pos.get(token, 0) + 1
