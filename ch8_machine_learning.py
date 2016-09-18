@@ -92,69 +92,56 @@ def knock72_imp2(file_name):
     dict_neg = {}
     pass
 
-def knock72_imp1(file_name):
+def knock72_word_ngram(line: str, n: int):
     # This function takes both stemmed words and word-based N-gram as feature input
-    stop_words = set(nltk.corpus.stopwords.words("english"))
-    stemmer = nltk.stem.porter.PorterStemmer()
-    dict_pos = {}
-    dict_neg = {}
-    with codecs.open(file_name, 'r', "utf-8") as fd:
-        for line in fd:
-            line = re.sub('\.', '', line)
-            line = re.sub('\,', '', line)
-            words = line.split(' ')
-            flag = words.pop(0)
-            n_gram_input = ""
-            for word in words:
-                if(not check_stopword(word, stop_words)):
-                    word = stemmer.stem(word)
-                    n_gram_input += " " + word
-                    if(flag == u"+"):
-                        dict_pos[word] = dict_pos.get(word, 0) + 1
-                    elif(flag == u"-"):
-                        dict_neg[word] = dict_neg.get(word, 0) + 1
-            # Obtain and process n-gram, bi-gram for simplicity
-            n_gram_result = n_gram(2, 'w', n_gram_input, "__")
-            for token in n_gram_result:
-                if(flag == u"+"):
-                    dict_pos[token] = dict_pos.get(token, 0) + 1
-                elif(flag == u"-"):
-                    dict_neg[token] = dict_neg.get(token, 0) + 1
-    dict_pos = sorted(dict_pos.items(), key=lambda x:x[1], reverse=True)
-    dict_neg = sorted(dict_neg.items(), key=lambda x:x[1], reverse=True)
-    return(dict_pos, dict_neg)
+    return_list = []
+    return(n_gram(n, 'w', line, "__"))
 
-def knock72_baseline(file_name):
+def knock72_baseline(line: str):
     # This function only takes the stemmed words as feature input
     stop_words = set(nltk.corpus.stopwords.words("english"))
     stemmer = nltk.stem.porter.PorterStemmer()
-    dict_pos = {}
-    dict_neg = {}
-    list_pos = []
-    list_neg = []
-    with codecs.open(file_name, 'r', "utf-8") as fd:
-        for line in fd:
+    return_list = []
+    words = line.split(' ')
+    for word in words:
+        word = stemmer.stem(word)
+        return_list.append(word)
+    return(return_list)
+
+def knock72():
+    stop_words = set(nltk.corpus.stopwords.words("english"))
+    stemmer = nltk.stem.porter.PorterStemmer()
+    return_list = []
+    pos_list = []
+    neg_list = []
+
+    with codecs.open("./rt-polaritydata/rt-polarity.pos", 'r', "latin-1") as fd_pos:
+        for line in fd_pos:
+            line = line.rstrip()
             line = re.sub('\.', '', line)
             line = re.sub('\,', '', line)
             words = line.split(' ')
-            flag = words.pop(0)
+            line_to_feed = ""
             for word in words:
                 if(not check_stopword(word, stop_words)):
-                    word = stemmer.stem(word)
-                    if(flag == u"+"):
-                        dict_pos[word] = dict_pos.get(word, 0) + 1
-                        list_pos.append(word)
-                    elif(flag == u"-"):
-                        dict_neg[word] = dict_neg.get(word, 0) + 1
-                        list_neg.append(word)
-    #dict_pos = sorted(dict_pos.items(), key=lambda x:x[1], reverse=True)
-    #dict_neg = sorted(dict_neg.items(), key=lambda x:x[1], reverse=True)
-    #return(list_pos, list_neg)
-    return(dict_pos, dict_neg)
-
-def knock72():
-    return(knock72_baseline("./sentiment.txt"))
-    return(knock72_imp1("./sentiment.txt"))
+                    line_to_feed += word + " "
+            line = re.sub(" $", "", line)
+            pos_list.extend(knock72_baseline(line))
+            pos_list.extend(knock72_word_ngram(line, 2))
+    with codecs.open("./rt-polaritydata/rt-polarity.neg", 'r', "latin-1") as fd_neg:
+        for line in fd_neg:
+            line = line.rstrip()
+            line = re.sub('\.', '', line)
+            line = re.sub('\,', '', line)
+            words = line.split(' ')
+            line_to_feed = ""
+            for word in words:
+                if(not check_stopword(word, stop_words)):
+                    line_to_feed += word + " "
+            line = re.sub(" $", "", line)
+            neg_list.extend(knock72_baseline(line))
+            neg_list.extend(knock72_word_ngram(line, 2))
+    return(pos_list, neg_list)
 
 '''
 73. 学習
@@ -163,39 +150,18 @@ def knock72():
 def knock73():
     tfidf = TfidfVectorizer(stop_words='english')
     text = []
-    train_Y = []
-    fd_pos = codecs.open("./rt-polaritydata/rt-polarity.pos", 'r', "latin-1")
-    for line in fd_pos:
-        text.append(line.rstrip())
-        train_Y.append(0)
-    fd_neg = codecs.open("./rt-polaritydata/rt-polarity.neg", 'r', "latin-1")
-    for line in fd_neg:
-        text.append(line.rstrip())
-        train_Y.append(1)
-    tfs = tfidf.fit_transform(text)
+    (pos_list, neg_list) = knock72()
+
+    train_X = pos_list[:]
+    train_X.extend(neg_list)
+    pos_list_y = [0] * len(pos_list)
+    neg_list_y = [1] * len(neg_list)
+    train_Y = pos_list_y
+    train_Y.extend(neg_list_y)
+    tfs = tfidf.fit_transform(train_X)
     model = sklearn.linear_model.LogisticRegression()
     model.fit(tfs, train_Y)
-    #print(model.predict(tfs))
     return("Completed")
-
-def knock73_sklearn():
-    model = sklearn.linear_model.LogisticRegression()
-    (dict_pos, dict_neg) = knock72()
-    train_X = []
-    train_Y = []
-    for key,value in dict_pos.items():
-        for i in range(value):
-            train_X.append(key)
-            train_Y.append(1)
-    for key,value in dict_neg.items():
-        for i in range(value):
-            train_X.append(key)
-            train_Y.append(0)
-    train_X = np.ravel(train_X)
-    train_Y = np.ravel(train_Y)
-    model.fit(train_X, train_Y)
-    print(model)
-    return(None)
 
 '''
 74. 予測
