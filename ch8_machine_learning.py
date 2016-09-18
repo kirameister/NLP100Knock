@@ -6,6 +6,9 @@ import codecs
 import nltk
 import random
 import re
+import sklearn
+import sklearn.linear_model as LogisticRegression
+import numpy as np
 
 
 '''
@@ -126,6 +129,8 @@ def knock72_baseline(file_name):
     stemmer = nltk.stem.porter.PorterStemmer()
     dict_pos = {}
     dict_neg = {}
+    list_pos = []
+    list_neg = []
     with codecs.open(file_name, 'r', "utf-8") as fd:
         for line in fd:
             line = re.sub('\.', '', line)
@@ -137,21 +142,44 @@ def knock72_baseline(file_name):
                     word = stemmer.stem(word)
                     if(flag == u"+"):
                         dict_pos[word] = dict_pos.get(word, 0) + 1
+                        list_pos.append(word)
                     elif(flag == u"-"):
                         dict_neg[word] = dict_neg.get(word, 0) + 1
-    dict_pos = sorted(dict_pos.items(), key=lambda x:x[1], reverse=True)
-    dict_neg = sorted(dict_neg.items(), key=lambda x:x[1], reverse=True)
+                        list_neg.append(word)
+    #dict_pos = sorted(dict_pos.items(), key=lambda x:x[1], reverse=True)
+    #dict_neg = sorted(dict_neg.items(), key=lambda x:x[1], reverse=True)
+    #return(list_pos, list_neg)
     return(dict_pos, dict_neg)
 
 def knock72():
-    return(knock72_imp1("./sentiment.txt"))
     return(knock72_baseline("./sentiment.txt"))
+    return(knock72_imp1("./sentiment.txt"))
 
 '''
 73. 学習
 72で抽出した素性を用いて，ロジスティック回帰モデルを学習せよ．
 '''
+class myLogisticRegression(object):
+    pass
+
 def knock73():
+    return(None)
+
+def knock73_sklearn():
+    model = sklearn.linear_model.LogisticRegression()
+    (dict_pos, dict_neg) = knock72()
+    train_X = []
+    train_Y = []
+    for key,value in dict_pos.items():
+        for i in range(value):
+            train_X.append(key)
+            train_Y.append(1)
+    for key,value in dict_neg.items():
+        for i in range(value):
+            train_X.append(key)
+            train_Y.append(0)
+    model.fit(train_X, train_Y)
+    print(model)
     return(None)
 
 '''
@@ -212,7 +240,8 @@ if(__name__ == '__main__'):
     if(args.knock == 2 or args.knock == 72):
         print(knock72())
     if(args.knock == 3 or args.knock == 73):
-        print(knock73())
+        #print(knock73())
+        print(knock73_sklearn())
     if(args.knock == 4 or args.knock == 74):
         print(knock74())
     if(args.knock == 5 or args.knock == 75):
