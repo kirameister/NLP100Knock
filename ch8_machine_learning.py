@@ -8,6 +8,7 @@ import random
 import re
 import sklearn
 import sklearn.linear_model as LogisticRegression
+from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 
 
@@ -159,11 +160,23 @@ def knock72():
 73. 学習
 72で抽出した素性を用いて，ロジスティック回帰モデルを学習せよ．
 '''
-class myLogisticRegression(object):
-    pass
-
 def knock73():
-    return(None)
+    tfidf = TfidfVectorizer(stop_words='english')
+    text = []
+    train_Y = []
+    fd_pos = codecs.open("./rt-polaritydata/rt-polarity.pos", 'r', "latin-1")
+    for line in fd_pos:
+        text.append(line.rstrip())
+        train_Y.append(0)
+    fd_neg = codecs.open("./rt-polaritydata/rt-polarity.neg", 'r', "latin-1")
+    for line in fd_neg:
+        text.append(line.rstrip())
+        train_Y.append(1)
+    tfs = tfidf.fit_transform(text)
+    model = sklearn.linear_model.LogisticRegression()
+    model.fit(tfs, train_Y)
+    #print(model.predict(tfs))
+    return("Completed")
 
 def knock73_sklearn():
     model = sklearn.linear_model.LogisticRegression()
@@ -178,6 +191,8 @@ def knock73_sklearn():
         for i in range(value):
             train_X.append(key)
             train_Y.append(0)
+    train_X = np.ravel(train_X)
+    train_Y = np.ravel(train_Y)
     model.fit(train_X, train_Y)
     print(model)
     return(None)
@@ -240,8 +255,8 @@ if(__name__ == '__main__'):
     if(args.knock == 2 or args.knock == 72):
         print(knock72())
     if(args.knock == 3 or args.knock == 73):
-        #print(knock73())
-        print(knock73_sklearn())
+        print(knock73())
+        #print(knock73_sklearn())
     if(args.knock == 4 or args.knock == 74):
         print(knock74())
     if(args.knock == 5 or args.knock == 75):
