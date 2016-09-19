@@ -4,6 +4,7 @@
 import argparse
 import codecs
 import nltk
+import pickle
 import random
 import re
 import sklearn
@@ -139,7 +140,8 @@ def knock72():
 72で抽出した素性を用いて，ロジスティック回帰モデルを学習せよ．
 '''
 def knock73():
-    tfidf = TfidfVectorizer(stop_words='english')
+    #tfidf = TfidfVectorizer(stop_words='english')
+    tfidf = TfidfVectorizer(analyzer=knock72_baseline)
     text = []
     (pos_list, neg_list) = knock72()
 
@@ -174,7 +176,13 @@ def knock74(input_line: str):
         word_list.extend(knock72_baseline(line_to_feed))
         word_list.extend(knock72_word_ngram(line_to_feed, 2))
 
-    (tfidf, model) = knock73()
+    tfidf_filename = "./knock73_tfidf"
+    model_filename = "./knock73_model"
+    with open(tfidf_filename, 'rb') as fd:
+        tfidf = pickle.load(fd)
+    with open(model_filename, 'rb') as fd:
+        model = pickle.load(fd)
+    #(tfidf, model) = knock73()
     test = tfidf.transform(word_list)
 
     return_string += str(model.predict(test)) + "\n\n"
@@ -186,6 +194,7 @@ def knock74(input_line: str):
 73で学習したロジスティック回帰モデルの中で，重みの高い素性トップ10と，重みの低い素性トップ10を確認せよ．
 '''
 def knock75():
+    (tfidf, model) = knock73()
     return(None)
 
 '''
@@ -232,7 +241,16 @@ if(__name__ == '__main__'):
     if(args.knock == 2 or args.knock == 72):
         print(knock72())
     if(args.knock == 3 or args.knock == 73):
-        print(knock73())
+        #print(knock73())
+        (tfidf, model) = knock73()
+        tfidf_filename = "./knock73_tfidf"
+        model_filename = "./knock73_model"
+        with open(tfidf_filename, 'wb') as fd:
+            pickle.dump(tfidf, fd)
+        with open(model_filename, 'wb') as fd:
+            pickle.dump(model, fd)
+        print("TFIDF dumped file: " + tfidf_filename)
+        print("Model dumped file: " + model_filename)
     if(args.knock == 4 or args.knock == 74):
         if(not args.arg):
             args.arg = "This is really great and exciting"
