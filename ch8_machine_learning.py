@@ -84,14 +84,6 @@ def n_gram(n, mode, string, delimiter):
         return_ngram.append(temp_string)
     return(return_ngram)
 
-def knock72_imp2(file_name):
-    # This function produces stemmed words, word-based N-gram, and char-based N-gram as feature input
-    stop_words = set(nltk.corpus.stopwords.words("english"))
-    stemmer = nltk.stem.porter.PorterStemmer()
-    dict_pos = {}
-    dict_neg = {}
-    pass
-
 def knock72_word_ngram(line: str, n: int):
     # This function takes both stemmed words and word-based N-gram as feature input
     return_list = []
@@ -110,7 +102,6 @@ def knock72_baseline(line: str):
 
 def knock72():
     stop_words = set(nltk.corpus.stopwords.words("english"))
-    stemmer = nltk.stem.porter.PorterStemmer()
     return_list = []
     pos_list = []
     neg_list = []
@@ -125,9 +116,9 @@ def knock72():
             for word in words:
                 if(not check_stopword(word, stop_words)):
                     line_to_feed += word + " "
-            line = re.sub(" $", "", line)
-            pos_list.extend(knock72_baseline(line))
-            pos_list.extend(knock72_word_ngram(line, 2))
+            line_to_feed = re.sub(" $", "", line_to_feed)
+            pos_list.extend(knock72_baseline(line_to_feed))
+            pos_list.extend(knock72_word_ngram(line_to_feed, 2))
     with codecs.open("./rt-polaritydata/rt-polarity.neg", 'r', "latin-1") as fd_neg:
         for line in fd_neg:
             line = line.rstrip()
@@ -138,9 +129,9 @@ def knock72():
             for word in words:
                 if(not check_stopword(word, stop_words)):
                     line_to_feed += word + " "
-            line = re.sub(" $", "", line)
-            neg_list.extend(knock72_baseline(line))
-            neg_list.extend(knock72_word_ngram(line, 2))
+            line_to_feed = re.sub(" $", "", line_to_feed)
+            neg_list.extend(knock72_baseline(line_to_feed))
+            neg_list.extend(knock72_word_ngram(line_to_feed, 2))
     return(pos_list, neg_list)
 
 '''
@@ -161,14 +152,34 @@ def knock73():
     tfs = tfidf.fit_transform(train_X)
     model = sklearn.linear_model.LogisticRegression()
     model.fit(tfs, train_Y)
-    return("Completed")
+    return(tfidf, model)
 
 '''
 74. 予測
 73で学習したロジスティック回帰モデルを用い，与えられた文の極性ラベル（正例なら"+1"，負例なら"-1"）と，その予測確率を計算するプログラムを実装せよ．
 '''
-def knock74():
-    return(None)
+def knock74(input_line: str):
+    stop_words = set(nltk.corpus.stopwords.words("english"))
+    return_string = ""
+    word_list = []
+    input_line = input_line.rstrip()
+    input_line = re.sub('\.', '', input_line)
+    input_line = re.sub('\,', '', input_line)
+    words = input_line.split(' ')
+    line_to_feed = ""
+    for word in words:
+        if(not check_stopword(word, stop_words)):
+            line_to_feed += word + " "
+        line_to_feed = re.sub(" $", "", line_to_feed)
+        word_list.extend(knock72_baseline(line_to_feed))
+        word_list.extend(knock72_word_ngram(line_to_feed, 2))
+
+    (tfidf, model) = knock73()
+    test = tfidf.transform(word_list)
+
+    return_string += str(model.predict(test)) + "\n\n"
+    return_string += str(model.predict_proba(test))
+    return(return_string)
 
 '''
 75. 素性の重み
@@ -222,9 +233,10 @@ if(__name__ == '__main__'):
         print(knock72())
     if(args.knock == 3 or args.knock == 73):
         print(knock73())
-        #print(knock73_sklearn())
     if(args.knock == 4 or args.knock == 74):
-        print(knock74())
+        if(not args.arg):
+            args.arg = "This is really great and exciting"
+        print(knock74(args.arg))
     if(args.knock == 5 or args.knock == 75):
         print(knock75())
     if(args.knock == 6 or args.knock == 76):
