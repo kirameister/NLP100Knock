@@ -85,18 +85,38 @@ def n_gram(n, mode, string, delimiter):
         return_ngram.append(temp_string)
     return(return_ngram)
 
-def knock72_word_ngram(line: str, n: int):
-    # This function takes both stemmed words and word-based N-gram as feature input
+def knock72_word_bigram(line: str):
+    # This function takes both stemmed words and word-based bi-gram as feature input
+    # In order to let TfidfVectorizer use this function on one go, this function also contains the same functionality as baseline. 
+    stop_words = set(nltk.corpus.stopwords.words("english"))
+    stemmer = nltk.stem.porter.PorterStemmer()
     return_list = []
-    return(n_gram(n, 'w', line, "__"))
+    line = line.rstrip()
+    line = re.sub('\.', '', line)
+    line = re.sub('\,', '', line)
+    line = re.sub('\s+$', '', line)
+    words = line.split(' ')
+    for word in words:
+        if(check_stopword(word, stop_words)):
+            continue
+        word = stemmer.stem(word)
+        return_list.append(word)
+    return_list.extend(n_gram(2, 'w', line, "__"))
+    return(return_list)
 
 def knock72_baseline(line: str):
     # This function only takes the stemmed words as feature input
     stop_words = set(nltk.corpus.stopwords.words("english"))
     stemmer = nltk.stem.porter.PorterStemmer()
     return_list = []
+    line = line.rstrip()
+    line = re.sub('\.', '', line)
+    line = re.sub('\,', '', line)
+    line = re.sub('\s+$', '', line)
     words = line.split(' ')
     for word in words:
+        if(check_stopword(word, stop_words)):
+            continue
         word = stemmer.stem(word)
         return_list.append(word)
     return(return_list)
@@ -109,30 +129,10 @@ def knock72():
 
     with codecs.open("./rt-polaritydata/rt-polarity.pos", 'r', "latin-1") as fd_pos:
         for line in fd_pos:
-            line = line.rstrip()
-            line = re.sub('\.', '', line)
-            line = re.sub('\,', '', line)
-            words = line.split(' ')
-            line_to_feed = ""
-            for word in words:
-                if(not check_stopword(word, stop_words)):
-                    line_to_feed += word + " "
-            line_to_feed = re.sub(" $", "", line_to_feed)
-            pos_list.extend(knock72_baseline(line_to_feed))
-            pos_list.extend(knock72_word_ngram(line_to_feed, 2))
+            pos_list.extend(knock72_baseline(line))
     with codecs.open("./rt-polaritydata/rt-polarity.neg", 'r', "latin-1") as fd_neg:
         for line in fd_neg:
-            line = line.rstrip()
-            line = re.sub('\.', '', line)
-            line = re.sub('\,', '', line)
-            words = line.split(' ')
-            line_to_feed = ""
-            for word in words:
-                if(not check_stopword(word, stop_words)):
-                    line_to_feed += word + " "
-            line_to_feed = re.sub(" $", "", line_to_feed)
-            neg_list.extend(knock72_baseline(line_to_feed))
-            neg_list.extend(knock72_word_ngram(line_to_feed, 2))
+            neg_list.extend(knock72_baseline(line))
     return(pos_list, neg_list)
 
 '''
@@ -140,8 +140,8 @@ def knock72():
 72で抽出した素性を用いて，ロジスティック回帰モデルを学習せよ．
 '''
 def knock73():
-    #tfidf = TfidfVectorizer(stop_words='english')
-    tfidf = TfidfVectorizer(analyzer=knock72_baseline)
+    #tfidf = TfidfVectorizer(analyzer=knock72_baseline)
+    tfidf = TfidfVectorizer(analyzer=knock72_word_bigram)
     text = []
     (pos_list, neg_list) = knock72()
 
@@ -163,7 +163,7 @@ def knock73():
 def knock74(input_line: str):
     stop_words = set(nltk.corpus.stopwords.words("english"))
     return_string = ""
-    word_list = []
+    token_list = []
     input_line = input_line.rstrip()
     input_line = re.sub('\.', '', input_line)
     input_line = re.sub('\,', '', input_line)
@@ -172,9 +172,9 @@ def knock74(input_line: str):
     for word in words:
         if(not check_stopword(word, stop_words)):
             line_to_feed += word + " "
-        line_to_feed = re.sub(" $", "", line_to_feed)
-        word_list.extend(knock72_baseline(line_to_feed))
-        word_list.extend(knock72_word_ngram(line_to_feed, 2))
+    line_to_feed = re.sub(" $", "", line_to_feed)
+    #token_list.extend(knock72_baseline(line_to_feed))
+    token_list.extend(knock72_word_bigram(line_to_feed))
 
     tfidf_filename = "./knock73_tfidf"
     model_filename = "./knock73_model"
@@ -182,8 +182,8 @@ def knock74(input_line: str):
         tfidf = pickle.load(fd)
     with open(model_filename, 'rb') as fd:
         model = pickle.load(fd)
-    #(tfidf, model) = knock73()
-    test = tfidf.transform(word_list)
+    print(token_list)
+    test = tfidf.transform(token_list)
 
     return_string += str(model.predict(test)) + "\n\n"
     return_string += str(model.predict_proba(test))
@@ -194,7 +194,10 @@ def knock74(input_line: str):
 73で学習したロジスティック回帰モデルの中で，重みの高い素性トップ10と，重みの低い素性トップ10を確認せよ．
 '''
 def knock75():
-    (tfidf, model) = knock73()
+    with open(tfidf_filename, 'rb') as fd:
+        tfidf = pickle.load(fd)
+    with open(model_filename, 'rb') as fd:
+        model = pickle.load(fd)
     return(None)
 
 '''
