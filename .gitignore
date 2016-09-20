@@ -26,3 +26,4 @@ rt-polaritydata
 sentiment.txt
 knock73_model
 knock73_tfidf
+__pycache__/
