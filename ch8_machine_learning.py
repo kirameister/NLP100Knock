@@ -182,12 +182,16 @@ def knock74(input_line: str):
         tfidf = pickle.load(fd)
     with open(model_filename, 'rb') as fd:
         model = pickle.load(fd)
-    print(token_list)
+    #print(token_list)
     test = tfidf.transform(token_list)
 
-    return_string += str(model.predict(test)) + "\n\n"
-    return_string += str(model.predict_proba(test))
-    return(return_string)
+    #return_string += str(model.predict(test)) + "\n\n"
+    probability_result = model.predict_proba(test).sum(axis=0)
+    if(probability_result[0] > probability_result[1]):
+        return_string = "+1"
+    else:
+        return_string = "-1"
+    return(return_string + "\t" + str(probability_result))
 
 '''
 75. 素性の重み
