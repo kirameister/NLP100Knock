@@ -160,7 +160,7 @@ def knock73():
 74. 予測
 73で学習したロジスティック回帰モデルを用い，与えられた文の極性ラベル（正例なら"+1"，負例なら"-1"）と，その予測確率を計算するプログラムを実装せよ．
 '''
-def knock74(input_line: str):
+def knock74(tfidf_filename:str, model_filename:str, input_line: str):
     stop_words = set(nltk.corpus.stopwords.words("english"))
     return_string = ""
     token_list = []
@@ -176,8 +176,6 @@ def knock74(input_line: str):
     #token_list.extend(knock72_baseline(line_to_feed))
     token_list.extend(knock72_word_bigram(line_to_feed))
 
-    tfidf_filename = "./knock73_tfidf"
-    model_filename = "./knock73_model"
     with open(tfidf_filename, 'rb') as fd:
         tfidf = pickle.load(fd)
     with open(model_filename, 'rb') as fd:
@@ -185,7 +183,6 @@ def knock74(input_line: str):
     #print(token_list)
     test = tfidf.transform(token_list)
 
-    #return_string += str(model.predict(test)) + "\n\n"
     probability_result = model.predict_proba(test).sum(axis=0)
     if(probability_result[0] > probability_result[1]):
         return_string = "+1"
@@ -197,11 +194,12 @@ def knock74(input_line: str):
 75. 素性の重み
 73で学習したロジスティック回帰モデルの中で，重みの高い素性トップ10と，重みの低い素性トップ10を確認せよ．
 '''
-def knock75():
+def knock75(tfidf_filename:str, model_filename:str):
     with open(tfidf_filename, 'rb') as fd:
         tfidf = pickle.load(fd)
     with open(model_filename, 'rb') as fd:
         model = pickle.load(fd)
+    print(model.get_params(deep=True))
     return(None)
 
 '''
@@ -238,6 +236,8 @@ if(__name__ == '__main__'):
     parser.add_argument('knock', type=int, help="Number of knock")
     parser.add_argument('-a', '--arg', help="Additional argument where appropriate")
     args = parser.parse_args()
+    tfidf_filename = "./knock73_tfidf"
+    model_filename = "./knock73_model"
 
     if(args.knock == 0 or args.knock == 70):
         print(knock70())
@@ -250,8 +250,6 @@ if(__name__ == '__main__'):
     if(args.knock == 3 or args.knock == 73):
         #print(knock73())
         (tfidf, model) = knock73()
-        tfidf_filename = "./knock73_tfidf"
-        model_filename = "./knock73_model"
         with open(tfidf_filename, 'wb') as fd:
             pickle.dump(tfidf, fd)
         with open(model_filename, 'wb') as fd:
@@ -261,9 +259,9 @@ if(__name__ == '__main__'):
     if(args.knock == 4 or args.knock == 74):
         if(not args.arg):
             args.arg = "This is really great and exciting"
-        print(knock74(args.arg))
+        print(knock74(tfidf_filename, model_filename, args.arg))
     if(args.knock == 5 or args.knock == 75):
-        print(knock75())
+        print(knock75(tfidf_filename, model_filename))
     if(args.knock == 6 or args.knock == 76):
         print(knock76())
     if(args.knock == 7 or args.knock == 77):
