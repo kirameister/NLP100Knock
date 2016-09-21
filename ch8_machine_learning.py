@@ -199,22 +199,76 @@ def knock75(tfidf_filename:str, model_filename:str):
         tfidf = pickle.load(fd)
     with open(model_filename, 'rb') as fd:
         model = pickle.load(fd)
-    print(model.get_params(deep=True))
-    return(None)
+    features = list(tfidf.get_feature_names())
+    weights  = list(model.coef_[0])
+    feature_weights = dict(zip(features, weights))
+    print(len(features))
+    print(len(weights))
+    return(sorted(feature_weights.items(), key=lambda x: x[1], reverse=True))
 
 '''
 76. ラベル付け
 学習データに対してロジスティック回帰モデルを適用し，正解のラベル，予測されたラベル，予測確率をタブ区切り形式で出力せよ．
 '''
 def knock76():
-    return(None)
+    stop_words = set(nltk.corpus.stopwords.words("english"))
+    token_list = []
+    return_list = []
+    with open(tfidf_filename, 'rb') as fd:
+        tfidf = pickle.load(fd)
+    with open(model_filename, 'rb') as fd:
+        model = pickle.load(fd)
+    with codecs.open("./sentiment.txt", 'r', "utf-8") as fd:
+        for test_line_src in fd:
+            line_to_feed = ""
+            predicted = ""
+            test_line = test_line_src.rstrip()
+            test_line = re.sub('\.', '', test_line)
+            test_line = re.sub('\,', '', test_line)
+            words = test_line.split(' ')
+            expected = words.pop(0)
+            for word in words:
+                if(not check_stopword(word, stop_words)):
+                    line_to_feed += word + " "
+            line_to_feed = re.sub(" $", "", line_to_feed)
+            token_list = knock72_word_bigram(line_to_feed)
+            test = tfidf.transform(token_list)
+            probability_result = model.predict_proba(test).sum(axis=0)
+            if(probability_result[0] > probability_result[1]):
+                predicted = "+"
+            else:
+                predicted = "-"
+            return_list.append(expected + "\t" + predicted + "\t" + str(probability_result[0]) + "\t" + str(probability_result[1]))
+    return(return_list)
 
 '''
 77. 正解率の計測
 76の出力を受け取り，予測の正解率，正例に関する適合率，再現率，F1スコアを求めるプログラムを作成せよ．
 '''
 def knock77():
-    return(None)
+    return_string = ""
+    TP = 0
+    TN = 0
+    FP = 0
+    FN = 0
+    src_list = knock76()
+    for line in src_list:
+        (expected, predicted, pos_score, neg_score) = line.split("\t")
+        if(expected == "+" and predicted == "+"):
+            TP += 1
+        if(expected == "+" and predicted == "-"):
+            FN += 1
+        if(expected == "-" and predicted == "+"):
+            FP += 1
+        if(expected == "-" and predicted == "-"):
+            TN += 1
+    precision = TP / (TP + FP)
+    return_string += "Precision: \t" + str(precision) + "\n"
+    recall    = TP / (TP + FN)
+    return_string += "Recall: \t" + str(recall) + "\n"
+    f_measure = (2 * recall * precision) / (recall + precision)
+    return_string += "F1: \t" + str(f_measure)
+    return(return_string)
 
 '''
 78. 5分割交差検定
@@ -261,9 +315,16 @@ if(__name__ == '__main__'):
             args.arg = "This is really great and exciting"
         print(knock74(tfidf_filename, model_filename, args.arg))
     if(args.knock == 5 or args.knock == 75):
-        print(knock75(tfidf_filename, model_filename))
+        sorted_feature_weights = knock75(tfidf_filename, model_filename)
+        print("== Features with highest weight ==")
+        for index in range(20):
+            print(sorted_feature_weights[index])
+        print("== Features with lowest weight ==")
+        for index in range(len(sorted_feature_weights)-20, len(sorted_feature_weights)):
+            print(sorted_feature_weights[index])
     if(args.knock == 6 or args.knock == 76):
-        print(knock76())
+        print("Exp\tPred\tPositive_Score\tNegative_Score")
+        print("\n".join(knock76()))
     if(args.knock == 7 or args.knock == 77):
         print(knock77())
     if(args.knock == 8 or args.knock == 78):
