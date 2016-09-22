@@ -9,6 +9,8 @@ import random
 import re
 import sklearn
 import sklearn.linear_model as LogisticRegression
+from sklearn.cross_validation import train_test_split
+from sklearn.cross_validation import cross_val_score
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 
@@ -142,7 +144,6 @@ def knock72():
 def knock73():
     #tfidf = TfidfVectorizer(analyzer=knock72_baseline)
     tfidf = TfidfVectorizer(analyzer=knock72_word_bigram)
-    text = []
     (pos_list, neg_list) = knock72()
 
     train_X = pos_list[:]
@@ -275,6 +276,14 @@ def knock77():
 76-77の実験では，学習に用いた事例を評価にも用いたため，正当な評価とは言えない．すなわち，分類器が訓練事例を丸暗記する際の性能を評価しており，モデルの汎化性能を測定していない．そこで，5分割交差検定により，極性分類の正解率，適合率，再現率，F1スコアを求めよ．
 '''
 def knock78():
+    tfidf = TfidfVectorizer(analyzer=knock72_word_bigram)
+    (pos_list, neg_list) = knock72()
+    data_X = pos_list[:]
+    data_X.extend(neg_list)
+    pos_list_y = [0] * len(pos_list)
+    neg_list_y = [1] * len(neg_list)
+    data_Y = pos_list_y
+    data_Y.extend(neg_list_y)
     return(None)
 
 '''
