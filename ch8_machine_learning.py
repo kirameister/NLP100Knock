@@ -275,7 +275,7 @@ def knock77():
 78. 5分割交差検定
 76-77の実験では，学習に用いた事例を評価にも用いたため，正当な評価とは言えない．すなわち，分類器が訓練事例を丸暗記する際の性能を評価しており，モデルの汎化性能を測定していない．そこで，5分割交差検定により，極性分類の正解率，適合率，再現率，F1スコアを求めよ．
 '''
-def knock78():
+def knock78(threshold_delta:float=0.0):
     return_string = ""
     stop_words = set(nltk.corpus.stopwords.words("english"))
     TP = 0
@@ -300,8 +300,8 @@ def knock78():
     # randomize the order in order to ensure further randomness
     random.shuffle(dataset_list_tuple)
     # split the randomized text into train and test set, but they have not been tokenized..
-    test_list_tuple   = dataset_list_tuple[0:len(dataset_list_tuple)//50]
-    train_list_tuple  = dataset_list_tuple[len(dataset_list_tuple)//50:len(dataset_list_tuple)]
+    test_list_tuple   = dataset_list_tuple[0:len(dataset_list_tuple)//5]
+    train_list_tuple  = dataset_list_tuple[len(dataset_list_tuple)//5:len(dataset_list_tuple)]
     # Start training..
     train_list_X = []
     train_list_Y = []
@@ -318,7 +318,7 @@ def knock78():
         test_tokens = (knock72_word_bigram(val[0]))
         test_tokens_transformed = tfidf.transform(test_tokens)
         probability_result = model.predict_proba(test_tokens_transformed).sum(axis=0)
-        if(probability_result[0] > probability_result[1]): # predicted = pos
+        if(probability_result[0] + threshold_delta > probability_result[1]): # predicted = pos
             if(expected == 0): # expected = pos
                 TP += 1
             else:
@@ -340,7 +340,13 @@ def knock78():
 79. 適合率-再現率グラフの描画
 ロジスティック回帰モデルの分類の閾値を変化させることで，適合率-再現率グラフを描画せよ．
 '''
-def knock79():
+def knock79(delta: float, limit: float):
+    #elems = knock78(0.0).split('\n')
+    current_threshold = 0.0
+    while(current_threshold <= limit):
+        elems = knock78(current_threshold).split('\n')
+        print(elems)
+        current_threshold += delta
     return(None)
 
 
@@ -387,8 +393,9 @@ if(__name__ == '__main__'):
     if(args.knock == 7 or args.knock == 77):
         print(knock77())
     if(args.knock == 8 or args.knock == 78):
+        #print(knock78(0.0))
         print(knock78())
     if(args.knock == 9 or args.knock == 79):
-        print(knock79())
+        print(knock79(delta=0.1, limit=1.0))
 
 
