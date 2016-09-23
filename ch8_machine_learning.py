@@ -276,7 +276,12 @@ def knock77():
 76-77の実験では，学習に用いた事例を評価にも用いたため，正当な評価とは言えない．すなわち，分類器が訓練事例を丸暗記する際の性能を評価しており，モデルの汎化性能を測定していない．そこで，5分割交差検定により，極性分類の正解率，適合率，再現率，F1スコアを求めよ．
 '''
 def knock78():
+    return_string = ""
     stop_words = set(nltk.corpus.stopwords.words("english"))
+    TP = 0
+    TN = 0
+    FP = 0
+    FN = 0
     # This is a dirty way to conduct cross validation with TFIDF..
     # split the obtained data into training and testing, and train the model. 
     tfidf = TfidfVectorizer(analyzer=knock72_word_bigram)
@@ -295,8 +300,8 @@ def knock78():
     # randomize the order in order to ensure further randomness
     random.shuffle(dataset_list_tuple)
     # split the randomized text into train and test set, but they have not been tokenized..
-    test_list_tuple   = dataset_list_tuple[0:len(dataset_list_tuple)//5]
-    train_list_tuple  = dataset_list_tuple[len(dataset_list_tuple)//5:len(dataset_list_tuple)]
+    test_list_tuple   = dataset_list_tuple[0:len(dataset_list_tuple)//50]
+    train_list_tuple  = dataset_list_tuple[len(dataset_list_tuple)//50:len(dataset_list_tuple)]
     # Start training..
     train_list_X = []
     train_list_Y = []
@@ -308,32 +313,28 @@ def knock78():
     model = sklearn.linear_model.LogisticRegression()
     model.fit(tfs, train_list_Y)
     # Test for each line in testset..
-    return
-    for i,val in enumerate(test_list_tuple):
-        pass
-
-
-    (pos_list, neg_list) = knock72()
-    all_data_list = []
-    for i in pos_list:
-        all_data_list.append((i, 0))
-    for i in neg_list:
-        all_data_list.append((i, 1))
-    random.shuffle(all_data_list)
-    test_list = all_data_list[0:len(all_data_list)//5]
-    test_list_utts = [x[0] for x in test_list]
-    print(test_list_utts[0:10])
-    return
-    train_list  = all_data_list[len(all_data_list)//5:len(all_data_list)]
-    tfs = tfidf.fit_transform([x[0] for x in train_list])
-    model = sklearn.linear_model.LogisticRegression()
-    model.fit(tfs, [x[1] for x in train_list])
-    # test the model using test partition.
-    test_list_utts = [x[0] for x in test_list]
-    for i in enumerate(test_list_utts):
-        print(test_list_utts[i])
-
-    return(None)
+    for val in test_list_tuple:
+        expected = val[1]
+        test_tokens = (knock72_word_bigram(val[0]))
+        test_tokens_transformed = tfidf.transform(test_tokens)
+        probability_result = model.predict_proba(test_tokens_transformed).sum(axis=0)
+        if(probability_result[0] > probability_result[1]): # predicted = pos
+            if(expected == 0): # expected = pos
+                TP += 1
+            else:
+                FP += 1
+        else: # predicted = neg
+            if(expected == 0): # expected = pos
+                FN += 1
+            else:
+                TN += 1
+    precision = TP / (TP + FP)
+    return_string += "Precision: \t" + str(precision) + "\n"
+    recall    = TP / (TP + FN)
+    return_string += "Recall: \t" + str(recall) + "\n"
+    f_measure = (2 * recall * precision) / (recall + precision)
+    return_string += "F1: \t" + str(f_measure)
+    return(return_string)
 
 '''
 79. 適合率-再現率グラフの描画
