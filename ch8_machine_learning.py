@@ -300,16 +300,16 @@ def knock78():
     # Start training..
     train_list_X = []
     train_list_Y = []
-    for i,val in enumerate(train_list_tuple):
-        temp_list_result = (knock72_word_bigram(train_list_tuple[i][0]))
+    for val in train_list_tuple:
+        temp_list_result = (knock72_word_bigram(val[0]))
         train_list_X.extend(temp_list_result)
-        train_list_Y.extend(train_list_tuple[i][1] for x in range(len(temp_list_result)))
+        train_list_Y.extend(val[1] for x in range(len(temp_list_result)))
     tfs = tfidf.fit_transform(train_list_X)
     model = sklearn.linear_model.LogisticRegression()
     model.fit(tfs, train_list_Y)
-    return
     # Test for each line in testset..
-    for i in enumerate(test_list_tuple):
+    return
+    for i,val in enumerate(test_list_tuple):
         pass
 
 
