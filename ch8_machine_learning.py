@@ -11,6 +11,7 @@ import sklearn
 import sklearn.linear_model as LogisticRegression
 from sklearn.cross_validation import train_test_split
 from sklearn.cross_validation import cross_val_score
+from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 
@@ -124,7 +125,6 @@ def knock72_baseline(line: str):
     return(return_list)
 
 def knock72():
-    stop_words = set(nltk.corpus.stopwords.words("english"))
     return_list = []
     pos_list = []
     neg_list = []
@@ -276,14 +276,63 @@ def knock77():
 76-77の実験では，学習に用いた事例を評価にも用いたため，正当な評価とは言えない．すなわち，分類器が訓練事例を丸暗記する際の性能を評価しており，モデルの汎化性能を測定していない．そこで，5分割交差検定により，極性分類の正解率，適合率，再現率，F1スコアを求めよ．
 '''
 def knock78():
+    stop_words = set(nltk.corpus.stopwords.words("english"))
+    # This is a dirty way to conduct cross validation with TFIDF..
+    # split the obtained data into training and testing, and train the model. 
     tfidf = TfidfVectorizer(analyzer=knock72_word_bigram)
+    dataset_list_tuple = []
+    pattern = re.compile('^(.) (.*)$')
+    with codecs.open("./sentiment.txt", 'r', "utf-8") as fd:
+        for line in fd:
+            m = pattern.search(line)
+            expected = m.groups()[0]
+            line = m.groups()[1]
+            if(expected == "+"):
+                expected = 0
+            else:
+                expected = 1
+            dataset_list_tuple.append((line, expected))
+    # randomize the order in order to ensure further randomness
+    random.shuffle(dataset_list_tuple)
+    # split the randomized text into train and test set, but they have not been tokenized..
+    test_list_tuple   = dataset_list_tuple[0:len(dataset_list_tuple)//5]
+    train_list_tuple  = dataset_list_tuple[len(dataset_list_tuple)//5:len(dataset_list_tuple)]
+    # Start training..
+    train_list_X = []
+    train_list_Y = []
+    for i,val in enumerate(train_list_tuple):
+        temp_list_result = (knock72_word_bigram(train_list_tuple[i][0]))
+        train_list_X.extend(temp_list_result)
+        train_list_Y.extend(train_list_tuple[i][1] for x in range(len(temp_list_result)))
+    tfs = tfidf.fit_transform(train_list_X)
+    model = sklearn.linear_model.LogisticRegression()
+    model.fit(tfs, train_list_Y)
+    return
+    # Test for each line in testset..
+    for i in enumerate(test_list_tuple):
+        pass
+
+
     (pos_list, neg_list) = knock72()
-    data_X = pos_list[:]
-    data_X.extend(neg_list)
-    pos_list_y = [0] * len(pos_list)
-    neg_list_y = [1] * len(neg_list)
-    data_Y = pos_list_y
-    data_Y.extend(neg_list_y)
+    all_data_list = []
+    for i in pos_list:
+        all_data_list.append((i, 0))
+    for i in neg_list:
+        all_data_list.append((i, 1))
+    random.shuffle(all_data_list)
+    test_list = all_data_list[0:len(all_data_list)//5]
+    test_list_utts = [x[0] for x in test_list]
+    print(test_list_utts[0:10])
+    return
+    train_list  = all_data_list[len(all_data_list)//5:len(all_data_list)]
+    tfs = tfidf.fit_transform([x[0] for x in train_list])
+    model = sklearn.linear_model.LogisticRegression()
+    model.fit(tfs, [x[1] for x in train_list])
+    # test the model using test partition.
+    test_list_utts = [x[0] for x in test_list]
+    for i in enumerate(test_list_utts):
+        print(test_list_utts[i])
+
     return(None)
 
 '''
