@@ -3,6 +3,8 @@
 
 import argparse
 import codecs
+import matplotlib.font_manager as fm
+import matplotlib.pyplot as plt
 import nltk
 import pickle
 import random
@@ -341,13 +343,30 @@ def knock78(threshold_delta:float=0.0):
 ロジスティック回帰モデルの分類の閾値を変化させることで，適合率-再現率グラフを描画せよ．
 '''
 def knock79(delta: float, limit: float):
-    #elems = knock78(0.0).split('\n')
     current_threshold = 0.0
+    all_threshold = []
+    all_precision = []
+    all_recall    = []
+    all_f1        = []
     while(current_threshold <= limit):
         elems = knock78(current_threshold).split('\n')
         print(elems)
+        precision = elems[0].split('\t')[1]
+        recall    = elems[1].split('\t')[1]
+        f1        = elems[2].split('\t')[1]
+        all_threshold.append(current_threshold)
+        all_precision.append(precision)
+        all_recall.append(recall)
+        all_f1.append(f1)
         current_threshold += delta
-    return(None)
+    plt.xlabel("Delta threshold")
+    plt.ylabel("Performance")
+    plt.title("Result")
+    plt.plot(all_threshold, all_precision, label="Precision", color="green")
+    plt.plot(all_threshold, all_recall, label="Recall", color="cyan")
+    plt.plot(all_threshold, all_f1, label="F-measure", color="red")
+    plt.show()
+    return("Completed")
 
 
 if(__name__ == '__main__'):
