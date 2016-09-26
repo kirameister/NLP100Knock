@@ -23,7 +23,6 @@ def knock80(src_filename: str, dst_filename: str):
     with open(src_filename, 'r') as fds:
         with open(dst_filename, 'w') as fdd:
             for line in fds:
-                #print(line)
                 words = line.split(' ')
                 line = ""
                 for word in words:
@@ -32,7 +31,6 @@ def knock80(src_filename: str, dst_filename: str):
                     if(word == ""):
                         continue
                     line = line + " " + word
-                #print(line)
                 line = re.sub('^ ', '', line)
                 line = re.sub(' $', '', line)
                 fdd.write(line)
@@ -49,9 +47,9 @@ def knock81():
 
 '''
 82. 文脈の抽出
-81で作成したコーパス中に出現するすべての単語ttに関して，単語ttと文脈語ccのペアをタブ区切り形式ですべて書き出せ．ただし，文脈語の定義は次の通りとする．
-- ある単語ttの前後dd単語を文脈語ccとして抽出する（ただし，文脈語に単語ttそのものは含まない）
-- 単語ttを選ぶ度に，文脈幅ddは{1,2,3,4,5}{1,2,3,4,5}の範囲でランダムに決める．
+81で作成したコーパス中に出現するすべての単語 t に関して，単語 t と文脈語 c のペアをタブ区切り形式ですべて書き出せ．ただし，文脈語の定義は次の通りとする．
+- ある単語 t の前後 d 単語を文脈語 c として抽出する（ただし，文脈語に単語 t そのものは含まない）
+- 単語 t を選ぶ度に，文脈幅 d は {1,2,3,4,5} の範囲でランダムに決める．
 '''
 def knock82():
     return(None)
