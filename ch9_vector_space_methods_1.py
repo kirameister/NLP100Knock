@@ -2,6 +2,7 @@
 #第9章: ベクトル空間法 (I)
 
 import argparse
+import re
 
 
 '''
@@ -18,7 +19,23 @@ enwiki-20150112-400-r10-105752.txt.bz2は，2015年1月12日時点の英語のWi
 
 以上の処理を適用した後，トークンをスペースで連結してファイルに保存せよ．
 '''
-def knock80():
+def knock80(src_filename: str, dst_filename: str):
+    with open(src_filename, 'r') as fds:
+        with open(dst_filename, 'w') as fdd:
+            for line in fds:
+                #print(line)
+                words = line.split(' ')
+                line = ""
+                for word in words:
+                    word = re.sub('^[\.,\!\?;:\(\)\[\]\'\"]+', '', word)
+                    word = re.sub('[\.,\!\?;:\(\)\[\]\'\"]+$', '', word)
+                    if(word == ""):
+                        continue
+                    line = line + " " + word
+                #print(line)
+                line = re.sub('^ ', '', line)
+                line = re.sub(' $', '', line)
+                fdd.write(line)
     return(None)
 
 '''
@@ -103,7 +120,7 @@ if(__name__ == '__main__'):
     args = parser.parse_args()
 
     if(args.knock == 0 or args.knock == 80):
-        print(knock80())
+        print(knock80("enwiki-20150112-400-r100-10576.txt", "ch9.txt"))
     if(args.knock == 1 or args.knock == 81):
         print(knock81())
     if(args.knock == 2 or args.knock == 82):
