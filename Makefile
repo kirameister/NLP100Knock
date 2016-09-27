@@ -1,5 +1,5 @@
 
-target_files = hightemp.txt jawiki-country.json neko.txt neko.txt.mecab neko.txt.cabocha nlp.txt artist.json rt-polaritydata.README.1.0.txt enwiki-20150112-400-r10-105752.txt enwiki-20150112-400-r10-105752.txt.bz2 stanford-corenlp-full-2015-12-09.zip rt-polaritydata.tar.gz
+target_files = hightemp.txt jawiki-country.json neko.txt neko.txt.mecab neko.txt.cabocha nlp.txt artist.json rt-polaritydata.README.1.0.txt enwiki-20150112-400-r10-105752.txt enwiki-20150112-400-r10-105752.txt.bz2 stanford-corenlp-full-2015-12-09.zip rt-polaritydata.tar.gz enwiki-20150112-400-r100-10576.txt
 
 all: $(target_files)
 
@@ -45,6 +45,10 @@ enwiki-20150112-400-r10-105752.txt.bz2:
 	wget http://www.cl.ecei.tohoku.ac.jp/nlp100/data/enwiki-20150112-400-r10-105752.txt.bz2
 enwiki-20150112-400-r10-105752.txt: enwiki-20150112-400-r10-105752.txt.bz2
 	bzip2 -d enwiki-20150112-400-r10-105752.txt.bz2
+enwiki-20150112-400-r100-10576.txt.bz2: 
+	wget http://www.cl.ecei.tohoku.ac.jp/nlp100/data/enwiki-20150112-400-r100-10576.txt.bz2
+enwiki-20150112-400-r100-10576.txt: enwiki-20150112-400-r100-10576.txt.bz2
+	bzip2 -d enwiki-20150112-400-r100-10576.txt.bz2
 
 temporary_files = col1.txt col2.txt
 
