@@ -34,7 +34,7 @@ def knock80(src_filename: str, dst_filename: str):
                 line = re.sub('^ ', '', line)
                 line = re.sub(' $', '', line)
                 fdd.write(line)
-    return(None)
+    return("Completed")
 
 '''
 81. 複合語からなる国名への対処
@@ -43,6 +43,52 @@ def knock80(src_filename: str, dst_filename: str):
 インターネット上から国名リストを各自で入手し，80のコーパス中に出現する複合語の国名に関して，スペースをアンダーバーに置換せよ．例えば，"United States"は"United_States"，"Isle of Man"は"Isle_of_Man"になるはずである．
 '''
 def knock81():
+    countries = [
+            "Antigua and Barbuda", 
+            "Bosnia and Herzegovina", 
+            "Burkina Faso", 
+            "Cabo Verde", 
+            "Central African Republic", 
+            "Costa Rica", 
+            "Cote d\'Ivoire", 
+            "Czech Republic", 
+            "Democratic Republic of the Congo", 
+            "Dominican Republic", 
+            "East Timor", 
+            "El Salvador", 
+            "Equatorial Guinea", 
+            "Guinea Bissau", 
+            "Holy See", 
+            "Hong Kong", 
+            "Marshall Islands", 
+            "New Zealand", 
+            "North Korea", 
+            "North Korea", 
+            "Palestinian Territories", 
+            "Papua New Guinea", 
+            "Republic of the Congo ", 
+            "Saint Kitts and Nevis", 
+            "Saint Lucia", 
+            "Saint Vincent and the Grenadines", 
+            "San Marino", 
+            "Sao Tome and Principe", 
+            "Saudi Arabia", 
+            "Sierra Leone", 
+            "Sint Maarten", 
+            "Solomon Islands", 
+            "South Africa", 
+            "South Korea", 
+            "South Korea", 
+            "South Sudan", 
+            "Sri Lanka", 
+            "The Bahamas", 
+            "The Gambia", 
+            "Timor Leste", 
+            "Trinidad and Tobago", 
+            "United Arab Emirates", 
+            "United Kingdom", 
+            "United States of America",
+            "United States" ]
     return(None)
 
 '''
@@ -118,9 +164,9 @@ if(__name__ == '__main__'):
     args = parser.parse_args()
 
     if(args.knock == 0 or args.knock == 80):
-        print(knock80("enwiki-20150112-400-r100-10576.txt", "ch9.txt"))
+        print(knock80("enwiki-20150112-400-r100-10576.txt", "ch9_enwiki.txt"))
     if(args.knock == 1 or args.knock == 81):
-        print(knock81())
+        print(knock81("ch9_enwiki.txt"))
     if(args.knock == 2 or args.knock == 82):
         print(knock82())
     if(args.knock == 3 or args.knock == 83):
