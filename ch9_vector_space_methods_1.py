@@ -42,7 +42,7 @@ def knock80(src_filename: str, dst_filename: str):
 
 インターネット上から国名リストを各自で入手し，80のコーパス中に出現する複合語の国名に関して，スペースをアンダーバーに置換せよ．例えば，"United States"は"United_States"，"Isle of Man"は"Isle_of_Man"になるはずである．
 '''
-def knock81():
+def knock81(src_filename: str, dst_filename: str):
     countries = [
             "Antigua and Barbuda", 
             "Bosnia and Herzegovina", 
@@ -89,6 +89,11 @@ def knock81():
             "United Kingdom", 
             "United States of America",
             "United States" ]
+    with open(src_filename, 'r') as fds:
+        with open(dst_filename, 'w') as fdd:
+            for line in fds:
+                for pattern in countries:
+                    line = line.
     return(None)
 
 '''
