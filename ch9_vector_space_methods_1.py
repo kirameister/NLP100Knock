@@ -3,6 +3,7 @@
 
 import argparse
 import collections
+import random
 import re
 
 
@@ -103,8 +104,24 @@ def knock81(src_filename: str, dst_filename: str):
 - ある単語 t の前後 d 単語を文脈語 c として抽出する（ただし，文脈語に単語 t そのものは含まない）
 - 単語 t を選ぶ度に，文脈幅 d は {1,2,3,4,5} の範囲でランダムに決める．
 '''
-def knock82():
-    return(None)
+def knock82(src_filename:str, dst_filename:str):
+    with open(src_filename, 'r') as fds:
+        with open(dst_filename, 'w') as fdd:
+            for line in fds:
+                line = line.rstrip()
+                words = line.split(' ')
+                for index, word in enumerate(words):
+                    index_range_pos = random.randint(1, 5)
+                    index_range_neg = index_range_pos * -1
+                    for index_delta in range(index_range_neg, index_range_pos):
+                        if(index_delta == 0):
+                            continue
+                        if(index + index_delta < 0):
+                            continue
+                        if(index + index_delta > len(words)-1):
+                            continue
+                        fdd.write(word + "\t" + words[index + index_delta] + "\n")
+    return("Completed")
 
 '''
 83. 単語／文脈の頻度の計測
@@ -114,7 +131,7 @@ def knock82():
 - f(∗,c): 文脈語 c の出現回数
 - N: 単語と文脈語のペアの総出現回数
 '''
-def knock83():
+def knock83(src_filename:str, dst_filename:str):
     return(None)
 
 '''
@@ -174,9 +191,9 @@ if(__name__ == '__main__'):
     if(args.knock == 1 or args.knock == 81):
         print(knock81("ch9_knock90_enwiki.txt", "ch9_knock91_enwiki.txt"))
     if(args.knock == 2 or args.knock == 82):
-        print(knock82())
+        print(knock82("ch9_knock91_enwiki.txt", "ch9_knock92_enwiki.txt"))
     if(args.knock == 3 or args.knock == 83):
-        print(knock83())
+        print(knock83("ch9_knock92_enwiki.txt", "ch9_knock93_enwiki.txt"))
     if(args.knock == 4 or args.knock == 84):
         print(knock84())
     if(args.knock == 5 or args.knock == 85):
