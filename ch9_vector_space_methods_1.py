@@ -2,6 +2,7 @@
 #第9章: ベクトル空間法 (I)
 
 import argparse
+import collections
 import re
 
 
@@ -43,58 +44,58 @@ def knock80(src_filename: str, dst_filename: str):
 インターネット上から国名リストを各自で入手し，80のコーパス中に出現する複合語の国名に関して，スペースをアンダーバーに置換せよ．例えば，"United States"は"United_States"，"Isle of Man"は"Isle_of_Man"になるはずである．
 '''
 def knock81(src_filename: str, dst_filename: str):
-    countries = [
-            "Antigua and Barbuda", 
-            "Bosnia and Herzegovina", 
-            "Burkina Faso", 
-            "Cabo Verde", 
-            "Central African Republic", 
-            "Costa Rica", 
-            "Cote d\'Ivoire", 
-            "Czech Republic", 
-            "Democratic Republic of the Congo", 
-            "Dominican Republic", 
-            "East Timor", 
-            "El Salvador", 
-            "Equatorial Guinea", 
-            "Guinea Bissau", 
-            "Holy See", 
-            "Hong Kong", 
-            "Marshall Islands", 
-            "New Zealand", 
-            "North Korea", 
-            "North Korea", 
-            "Palestinian Territories", 
-            "Papua New Guinea", 
-            "Republic of the Congo ", 
-            "Saint Kitts and Nevis", 
-            "Saint Lucia", 
-            "Saint Vincent and the Grenadines", 
-            "San Marino", 
-            "Sao Tome and Principe", 
-            "Saudi Arabia", 
-            "Sierra Leone", 
-            "Sint Maarten", 
-            "Solomon Islands", 
-            "South Africa", 
-            "South Korea", 
-            "South Korea", 
-            "South Sudan", 
-            "Sri Lanka", 
-            "The Bahamas", 
-            "The Gambia", 
-            "Timor Leste", 
-            "Trinidad and Tobago", 
-            "United Arab Emirates", 
-            "United Kingdom", 
-            "United States of America",
-            "United States" ]
+    countries = collections.OrderedDict()
+    countries["Antigua and Barbuda"] = "Antigua_and_Barbuda" 
+    countries["Bosnia and Herzegovina"] =  "Bosnia_and_Herzegovina"
+    countries["Burkina Faso"] = "Burkina_Faso"
+    countries["Cabo Verde"] = "Cabo_Verde"
+    countries["Central African Republic"] = "Central_African_Republic"
+    countries["Costa Rica"] = "Costa_Rica"
+    countries["Cote d\'Ivoire"] = "Cote_d\'Ivoire"
+    countries["Czech Republic"] = "Czech_Republic"
+    countries["Democratic Republic of the Congo"] = "Democratic_Republic_of_the_Congo"
+    countries["Dominican Republic"] = "Dominican_Republic"
+    countries["East Timor"] = "East_Timor"
+    countries["El Salvador"] = "El_Salvador"
+    countries["Equatorial Guinea"] = "Equatorial_Guinea"
+    countries["Guinea Bissau"] = "Guinea_Bissau"
+    countries["Holy See"] = "Holy_See"
+    countries["Hong Kong"] = "Hong_Kong"
+    countries["Marshall Islands"] = "Marshall_Islands"
+    countries["New Zealand"] = "New_Zealand"
+    countries["North Korea"] = "North_Korea"
+    countries["Palestinian Territories"] = "Palestinian_Territories"
+    countries["Papua New Guinea"] = "Papua_New_Guinea"
+    countries["Republic of the Congo "] = "Republic_of_the_Congo "
+    countries["Saint Kitts and Nevis"] = "Saint_Kitts_and_Nevis"
+    countries["Saint Lucia"] = "Saint_Lucia"
+    countries["Saint Vincent and the Grenadines"] = "Saint_Vincent_and_the_Grenadines"
+    countries["San Marino"] = "San_Marino"
+    countries["Sao Tome and Principe"] = "Sao_Tome_and_Principe"
+    countries["Saudi Arabia"] = "Saudi_Arabia"
+    countries["Sierra Leone"] = "Sierra_Leone" 
+    countries["Sint Maarten"] = "Sint_Maarten"
+    countries["Solomon Islands"] = "Solomon_Islands"
+    countries["South Africa"] = "South_Africa" 
+    countries["South Korea"] = "South_Korea" 
+    countries["South Sudan"] = "South_Sudan"
+    countries["Sri Lanka"] = "Sri_Lanka"
+    countries["The Bahamas"] = "The_Bahamas"
+    countries["The Gambia"] = "The_Gambia"
+    countries["Timor Leste"] = "Timor_Leste"
+    countries["Trinidad and Tobago"] = "Trinidad_and_Tobago"
+    countries["United Arab Emirates"] = "United_Arab_Emirates"
+    countries["United Kingdom"] = "United_Kingdom"
+    countries["United States of America"] = "United_States_of_America"
+    countries["United States"] = "United_States" 
     with open(src_filename, 'r') as fds:
         with open(dst_filename, 'w') as fdd:
             for line in fds:
-                for pattern in countries:
-                    line = line.
-    return(None)
+                for pattern in countries.keys():
+                    if(re.search(pattern, line)):
+                        line = re.sub(pattern, countries[pattern], line)
+                fdd.write(line)
+    return("Completed")
 
 '''
 82. 文脈の抽出
@@ -169,9 +170,9 @@ if(__name__ == '__main__'):
     args = parser.parse_args()
 
     if(args.knock == 0 or args.knock == 80):
-        print(knock80("enwiki-20150112-400-r100-10576.txt", "ch9_enwiki.txt"))
+        print(knock80("enwiki-20150112-400-r100-10576.txt", "ch9_knock90_enwiki.txt"))
     if(args.knock == 1 or args.knock == 81):
-        print(knock81("ch9_enwiki.txt"))
+        print(knock81("ch9_knock90_enwiki.txt", "ch9_knock91_enwiki.txt"))
     if(args.knock == 2 or args.knock == 82):
         print(knock82())
     if(args.knock == 3 or args.knock == 83):
