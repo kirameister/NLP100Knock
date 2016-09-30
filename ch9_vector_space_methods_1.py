@@ -132,6 +132,8 @@ def knock82(src_filename:str, dst_filename:str):
 - N: 単語と文脈語のペアの総出現回数
 '''
 def knock83(src_filename:str, dst_filename:str):
+    with open(src_filename, 'r') as fds:
+        pass
     return(None)
 
 '''
