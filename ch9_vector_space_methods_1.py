@@ -5,6 +5,7 @@ import argparse
 import collections
 import random
 import re
+import sys
 
 
 '''
@@ -133,7 +134,11 @@ def knock82(src_filename:str, dst_filename:str):
 '''
 def knock83(src_filename:str, dst_filename:str):
     with open(src_filename, 'r') as fds:
-        pass
+        with open(dst_filename, 'w') as fdd:
+            for line in fds:
+                (word, context) = line.split('\t')
+                print(word + "\t" + context)
+                #sys.exit()
     return(None)
 
 '''
