@@ -3,6 +3,7 @@
 
 import argparse
 import collections
+import math
 import random
 import re
 import sys
@@ -139,7 +140,6 @@ def knock83(src_filename:str, dst_wco_filename:str, dst_wo_filename:str, dst_ct_
     context_occur      = dict()
     with open(src_filename, 'r') as fds:
         for line in fds:
-            #(word, context) = line.rstrip().split('\t')
             (word, context) = line.split('\t')
             context = context.rstrip()
             word_context = word + "\t" + context
@@ -167,8 +167,38 @@ def knock83(src_filename:str, dst_wco_filename:str, dst_wo_filename:str, dst_ct_
 - f(t,c)<10f(t,c)<10ならば，X_{tc} = 0
 ここで，PPMI(t,c) は Positive Pointwise Mutual Information（正の相互情報量）と呼ばれる統計量である．なお，行列 X の行数・列数は数百万オーダとなり，行列のすべての要素を主記憶上に載せることは無理なので注意すること．幸い，行列 X のほとんどの要素は 0 になるので，非 0 の要素だけを書き出せばよい．
 '''
-def knock84():
-    return(None)
+def knock84(src_wco_filename:str, src_wo_filename:str, src_ct_filename:str, src_total_count_filename:str, dst_matrix_filename:str):
+    pair_total_count   = 0
+    word_context_occur = dict()
+    word_occur         = dict()
+    context_occur      = dict()
+    Xtc_matrix = dict()
+    with open(src_wco_filename, 'r') as fds:
+        for line in fds:
+            (token, context, count) = line.rstrip().split('\t')
+            key = token + "\t" + context
+            if(int(count) >= 10):
+                word_context_occur[key] = count
+    with open(src_wo_filename, 'r') as fds:
+        for line in fds:
+            (token, count) = line.rstrip().split('\t')
+            word_occur[token] = count
+    with open(src_ct_filename, 'r') as fds:
+        for line in fds:
+            (context, count) = line.rstrip().split('\t')
+            context_occur[context] = count
+    with open(src_total_count_filename, 'r') as fds:
+        for line in fds:
+            pair_total_count = int(line)
+    for key, value in word_context_occur.items():
+        (token, context) = key.split('\t')
+        Xtc_matrix[key] = math.log(
+                float(pair_total_count) * float(value) / float(word_occur[token]) * float(context_occur[context])
+                )
+    with open(dst_matrix_filename, 'w') as fdd:
+        for key,value in Xtc_matrix.items():
+            fdd.write(key + "\t" + str(value) + "\n")
+    return("Completed")
 
 '''
 85. 主成分分析による次元圧縮
@@ -220,9 +250,13 @@ if(__name__ == '__main__'):
         print(knock82("ch9_knock91_enwiki.txt", "ch9_knock92_enwiki.txt"))
     if(args.knock == 3 or args.knock == 83):
         print(knock83("ch9_knock92_enwiki.txt", "ch9_knock93_word_context.txt",
-            "ch9_knock93_word.txt", "ch9_knock93_context.txt", "ch9_knock93_pair_occurrence.txt"))
+            "ch9_knock93_word.txt", "ch9_knock93_context.txt", 
+            "ch9_knock93_pair_occurrence.txt"))
     if(args.knock == 4 or args.knock == 84):
-        print(knock84())
+        print(knock84("ch9_knock93_word_context.txt",
+            "ch9_knock93_word.txt", "ch9_knock93_context.txt", 
+            "ch9_knock93_pair_occurrence.txt",
+            "ch9_knock94_matrix.txt"))
     if(args.knock == 5 or args.knock == 85):
         print(knock85())
     if(args.knock == 6 or args.knock == 86):
