@@ -132,18 +132,37 @@ def knock82(src_filename:str, dst_filename:str):
 - f(∗,c): 文脈語 c の出現回数
 - N: 単語と文脈語のペアの総出現回数
 '''
-def knock83(src_filename:str, dst_filename:str):
+def knock83(src_filename:str, dst_wco_filename:str, dst_wo_filename:str, dst_ct_filename:str, dst_total_count_filename:str):
+    pair_total_count   = 0
+    word_context_occur = dict()
+    word_occur         = dict()
+    context_occur      = dict()
     with open(src_filename, 'r') as fds:
-        with open(dst_filename, 'w') as fdd:
-            for line in fds:
-                (word, context) = line.split('\t')
-                print(word + "\t" + context)
-                #sys.exit()
-    return(None)
+        for line in fds:
+            #(word, context) = line.rstrip().split('\t')
+            (word, context) = line.split('\t')
+            context = context.rstrip()
+            word_context = word + "\t" + context
+            word_context_occur[word_context] = word_context_occur.get(word_context, 0) + 1
+            word_occur[word] = word_occur.get(word, 0) + 1
+            context_occur[context] = context_occur.get(context, 0) + 1
+            pair_total_count += 1
+    with open(dst_wco_filename, 'w') as fdd:
+        for key,value in word_context_occur.items():
+            fdd.write(key + "\t" + str(value) + "\n")
+    with open(dst_wo_filename, 'w') as fdd:
+        for key,value in word_occur.items():
+            fdd.write(key + "\t" + str(value) + "\n")
+    with open(dst_ct_filename, 'w') as fdd:
+        for key,value in context_occur.items():
+            fdd.write(key + "\t" + str(value) + "\n")
+    with open(dst_total_count_filename, 'w') as fdd:
+        fdd.write(str(pair_total_count) + "\n")
+    return("Completed")
 
 '''
 84. 単語文脈行列の作成
-83の出力を利用し，単語文脈行列XXを作成せよ．ただし，行列XXの各要素XtcXtcは次のように定義する．
+83の出力を利用し，単語文脈行列XXを作成せよ．ただし，行列 X の各要素 Xtc は次のように定義する．
 - f(t,c)≥10f(t,c)≥10ならば，X_{tc} = PPMI(t,c)=max{ log( N×f(t,c) / f(t,∗)×f(∗,c) ), 0}
 - f(t,c)<10f(t,c)<10ならば，X_{tc} = 0
 ここで，PPMI(t,c) は Positive Pointwise Mutual Information（正の相互情報量）と呼ばれる統計量である．なお，行列 X の行数・列数は数百万オーダとなり，行列のすべての要素を主記憶上に載せることは無理なので注意すること．幸い，行列 X のほとんどの要素は 0 になるので，非 0 の要素だけを書き出せばよい．
@@ -200,7 +219,8 @@ if(__name__ == '__main__'):
     if(args.knock == 2 or args.knock == 82):
         print(knock82("ch9_knock91_enwiki.txt", "ch9_knock92_enwiki.txt"))
     if(args.knock == 3 or args.knock == 83):
-        print(knock83("ch9_knock92_enwiki.txt", "ch9_knock93_enwiki.txt"))
+        print(knock83("ch9_knock92_enwiki.txt", "ch9_knock93_word_context.txt",
+            "ch9_knock93_word.txt", "ch9_knock93_context,txt", "ch9_knock93_pair_occurrence.txt"))
     if(args.knock == 4 or args.knock == 84):
         print(knock84())
     if(args.knock == 5 or args.knock == 85):
