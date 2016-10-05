@@ -220,7 +220,7 @@ if(__name__ == '__main__'):
         print(knock82("ch9_knock91_enwiki.txt", "ch9_knock92_enwiki.txt"))
     if(args.knock == 3 or args.knock == 83):
         print(knock83("ch9_knock92_enwiki.txt", "ch9_knock93_word_context.txt",
-            "ch9_knock93_word.txt", "ch9_knock93_context,txt", "ch9_knock93_pair_occurrence.txt"))
+            "ch9_knock93_word.txt", "ch9_knock93_context.txt", "ch9_knock93_pair_occurrence.txt"))
     if(args.knock == 4 or args.knock == 84):
         print(knock84())
     if(args.knock == 5 or args.knock == 85):
