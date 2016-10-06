@@ -204,7 +204,10 @@ def knock84(src_wco_filename:str, src_wo_filename:str, src_ct_filename:str, src_
 85. 主成分分析による次元圧縮
 84で得られた単語文脈行列に対して，主成分分析を適用し，単語の意味ベクトルを300次元に圧縮せよ．
 '''
-def knock85():
+def knock85(src_filename:str, dst_filename:str):
+    with open(src_filename, 'r') as fds:
+        for line in fds:
+            (word, context, ppm) = line.rstrip().split('\t')
     return(None)
 
 '''
@@ -258,7 +261,7 @@ if(__name__ == '__main__'):
             "ch9_knock93_pair_occurrence.txt",
             "ch9_knock94_matrix.txt"))
     if(args.knock == 5 or args.knock == 85):
-        print(knock85())
+        print(knock85("ch9_knock94_matrix.txt", "ch9_knock95_matrix.txt"))
     if(args.knock == 6 or args.knock == 86):
         print(knock86())
     if(args.knock == 7 or args.knock == 87):
