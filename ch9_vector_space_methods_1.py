@@ -8,6 +8,10 @@ import random
 import re
 import sys
 
+import numpy as np
+from scipy import linalg
+import sklearn.decomposition
+
 
 '''
 enwiki-20150112-400-r10-105752.txt.bz2は，2015年1月12日時点の英語のWikipedia記事のうち，約400語以上で構成される記事の中から，ランダムに1/10サンプリングした105,752記事のテキストをbzip2形式で圧縮したものである．このテキストをコーパスとして，単語の意味を表すベクトル（分散表現）を学習したい．第9章の前半では，コーパスから作成した単語文脈共起行列に主成分分析を適用し，単語ベクトルを学習する過程を，いくつかの処理に分けて実装する．第9章の後半では，学習で得られた単語ベクトル（300次元）を用い，単語の類似度計算やアナロジー（類推）を行う．
@@ -208,6 +212,7 @@ def knock85(src_filename:str, dst_filename:str):
     with open(src_filename, 'r') as fds:
         for line in fds:
             (word, context, ppm) = line.rstrip().split('\t')
+
     return(None)
 
 '''
