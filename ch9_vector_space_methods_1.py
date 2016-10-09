@@ -287,11 +287,25 @@ def knock87(search_word1:str, search_word2:str, src_filename:str, src_word_dict_
 85で得た単語の意味ベクトルを読み込み，"England"とコサイン類似度が高い10語と，その類似度を出力せよ．
 '''
 def knock88(search_word:str, src_filename:str, src_word_dict_filename:str, src_cont_dict_filename:str):
+    return_item_num = 10
+    word_similarity_dict = dict()
+    return_value = ""
     data_array_converted = np.load(src_filename)
     with open(src_word_dict_filename, 'r') as fds:
         row_word_dict = json.load(fds)
     src_vector = data_array_converted[row_word_dict[search_word]]
-    return(None)
+    for key, value in row_word_dict.items():
+        if(key == search_word):
+            continue
+        similarity = scipy.spatial.distance.cosine(data_array_converted[row_word_dict[search_word]], data_array_converted[row_word_dict[key]])
+        word_similarity_dict[key] = similarity
+    i = 0
+    for key, value in sorted(word_similarity_dict.items(), key=lambda x:x[1]):
+        if(i > return_item_num):
+            break
+        i += 1
+        return_value += key + "\t" + str(value) + "\n"
+    return(return_value)
 
 '''
 89. 加法構成性によるアナロジー
