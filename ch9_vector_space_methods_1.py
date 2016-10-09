@@ -11,7 +11,8 @@ import re
 import sys
 
 import numpy as np
-from scipy import linalg
+#from scipy import linalg
+import scipy
 import sklearn.decomposition
 
 
@@ -274,14 +275,22 @@ def knock86(search_word:str, src_filename:str, src_word_dict_filename:str, src_c
 87. 単語の類似度
 85で得た単語の意味ベクトルを読み込み，"United States"と"U.S."のコサイン類似度を計算せよ．ただし，"U.S."は内部的に"U.S"と表現されていることに注意せよ．
 '''
-def knock87():
-    return(None)
+def knock87(search_word1:str, search_word2:str, src_filename:str, src_word_dict_filename:str, src_cont_dict_filename:str):
+    data_array_converted = np.load(src_filename)
+    with open(src_word_dict_filename, 'r') as fds:
+        row_word_dict = json.load(fds)
+    return_vector = scipy.spatial.distance.cosine(data_array_converted[row_word_dict[search_word1]], data_array_converted[row_word_dict[search_word2]])
+    return(return_vector)
 
 '''
 88. 類似度の高い単語10件
 85で得た単語の意味ベクトルを読み込み，"England"とコサイン類似度が高い10語と，その類似度を出力せよ．
 '''
-def knock88():
+def knock88(search_word:str, src_filename:str, src_word_dict_filename:str, src_cont_dict_filename:str):
+    data_array_converted = np.load(src_filename)
+    with open(src_word_dict_filename, 'r') as fds:
+        row_word_dict = json.load(fds)
+    src_vector = data_array_converted[row_word_dict[search_word]]
     return(None)
 
 '''
@@ -296,6 +305,7 @@ if(__name__ == '__main__'):
     parser = argparse.ArgumentParser(description='Ch 9')
     parser.add_argument('knock', type=int, help="Number of knock")
     parser.add_argument('-a', '--arg', help="Additional argument where appropriate")
+    parser.add_argument('-s', '--secondary', help="Another additional argument where appropriate")
     args = parser.parse_args()
 
     if(args.knock == 0 or args.knock == 80):
@@ -323,9 +333,17 @@ if(__name__ == '__main__'):
             args.arg = "United_States"
         print(knock86(args.arg, "ch9_knock95_matrix.npy", "ch9_knock95_word_dict.json", "ch9_knock95_cont_dict.json"))
     if(args.knock == 7 or args.knock == 87):
-        print(knock87())
+        if(not args.arg):
+            args.arg = "United_States"
+        if(not args.secondary):
+            args.secondary = "U.S"
+            args.secondary = "American"
+        print(knock87(args.arg, args.secondary, "ch9_knock95_matrix.npy", "ch9_knock95_word_dict.json", "ch9_knock95_cont_dict.json"))
     if(args.knock == 8 or args.knock == 88):
-        print(knock88())
+        if(not args.arg):
+            args.arg = "England"
+            args.arg = "United_States"
+        print(knock88(args.arg, "ch9_knock95_matrix.npy", "ch9_knock95_word_dict.json", "ch9_knock95_cont_dict.json"))
     if(args.knock == 9 or args.knock == 89):
         print(knock89())
 
