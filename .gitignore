@@ -28,16 +28,5 @@ knock73_model
 knock73_tfidf
 __pycache__/
 enwiki-20150112-400-r100-10576.txt
-ch9_knock90_enwiki.txt
-ch9_knock91_enwiki.txt
-ch9_knock92_enwiki.txt
-ch9_knock93_enwiki.txt
 .DS_Store
-ch9_knock93_context.txt
-ch9_knock93_pair_occurrence.txt
-ch9_knock93_word.txt
-ch9_knock93_word_context.txt
-ch9_knock94_matrix.txt
-ch9_knock95_matrix.npy
-ch9_knock95_word_dict.json
-ch9_knock95_cont_dict.json
+temp_*
