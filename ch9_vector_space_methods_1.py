@@ -3,7 +3,9 @@
 
 import argparse
 import collections
+import json
 import math
+import pickle
 import random
 import re
 import sys
@@ -208,7 +210,7 @@ def knock84(src_wco_filename:str, src_wo_filename:str, src_ct_filename:str, src_
 85. 主成分分析による次元圧縮
 84で得られた単語文脈行列に対して，主成分分析を適用し，単語の意味ベクトルを300次元に圧縮せよ．
 '''
-def knock85(src_filename:str, dst_filename:str):
+def knock85(src_filename:str, dst_filename:str, dst_word_dict_filename:str, dst_cont_dict_filename:str):
     n_dim = 300
     pca = sklearn.decomposition.PCA(n_components = n_dim)
 
@@ -243,7 +245,14 @@ def knock85(src_filename:str, dst_filename:str):
     pca.fit(data_array)
     data_array_converted = pca.transform(data_array)
     print("size of data_array after fit: " + str(data_array_converted.shape))
+    # Saving the relevant files.. Please note that you need to save the dict contents as well..
     np.save(dst_filename, data_array_converted)
+    with open(dst_word_dict_filename, 'w') as fdd:
+        #pickle.dump(row_word_dict, fdd)
+        json.dump(row_word_dict, fdd, ensure_ascii=False, indent=4, sort_keys=True)
+    with open(dst_cont_dict_filename, 'w') as fdd:
+        #pickle.dump(col_cont_dict, fdd)
+        json.dump(col_cont_dict, fdd, ensure_ascii=False, indent=4, sort_keys=True)
     # Following is not really required, but anyhow..
     data_array_reversed = pca.inverse_transform(data_array_converted)
     print("size of data_array after revert: " + str(data_array_reversed.shape))
@@ -253,8 +262,13 @@ def knock85(src_filename:str, dst_filename:str):
 86. 単語ベクトルの表示
 85で得た単語の意味ベクトルを読み込み，"United States"のベクトルを表示せよ．ただし，"United States"は内部的には"United_States"と表現されていることに注意せよ．
 '''
-def knock86():
-    return(None)
+def knock86(search_word:str, src_filename:str, src_word_dict_filename:str, src_cont_dict_filename:str):
+    data_array_converted = np.load(src_filename)
+    with open(src_word_dict_filename, 'r') as fds:
+        row_word_dict = json.load(fds)
+    with open(src_cont_dict_filename, 'r') as fds:
+        col_cont_dict = json.load(fds)
+    return(data_array_converted[row_word_dict[search_word]])
 
 '''
 87. 単語の類似度
@@ -303,9 +317,11 @@ if(__name__ == '__main__'):
             "ch9_knock93_pair_occurrence.txt",
             "ch9_knock94_matrix.txt"))
     if(args.knock == 5 or args.knock == 85):
-        print(knock85("ch9_knock94_matrix.txt", "ch9_knock95_matrix"))
+        print(knock85("ch9_knock94_matrix.txt", "ch9_knock95_matrix.npy", "ch9_knock95_word_dict.json", "ch9_knock95_cont_dict.json"))
     if(args.knock == 6 or args.knock == 86):
-        print(knock86())
+        if(not args.arg):
+            args.arg = "United_States"
+        print(knock86(args.arg, "ch9_knock95_matrix.npy", "ch9_knock95_word_dict.json", "ch9_knock95_cont_dict.json"))
     if(args.knock == 7 or args.knock == 87):
         print(knock87())
     if(args.knock == 8 or args.knock == 88):
