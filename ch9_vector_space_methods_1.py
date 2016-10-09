@@ -209,24 +209,45 @@ def knock84(src_wco_filename:str, src_wo_filename:str, src_ct_filename:str, src_
 84で得られた単語文脈行列に対して，主成分分析を適用し，単語の意味ベクトルを300次元に圧縮せよ．
 '''
 def knock85(src_filename:str, dst_filename:str):
-    data_list = []
     n_dim = 300
     pca = sklearn.decomposition.PCA(n_components = n_dim)
+
+    # First, we'll need to figure out the size of the list, which is later converted into nparray()..
+    row_word_index = 0
+    col_cont_index = 0
+    row_word_dict = dict()
+    col_cont_dict = dict()
     with open(src_filename, 'r') as fds:
         for line in fds:
             (word, context, ppm) = line.rstrip().split('\t')
-            data_list.append(float(ppm))
-    data_size = len(data_list)
-    print(data_size)
-    #data_array = np.identity(data_size) * np.array(data_list)
+            if(not word in row_word_dict):
+                row_word_dict[word] = row_word_index
+                row_word_index += 1
+            if(not context in col_cont_dict):
+                col_cont_dict[context] = col_cont_index
+                col_cont_index += 1
+    print("word size:    " + str(len(row_word_dict)))
+    print("context size: " + str(len(col_cont_dict)))
+    # Creating the 2-dim list
+    data_list = [[0 for i in range(len(col_cont_dict))] for j in range(len(row_word_dict))]
+    # Actually entering the (float) values to the list, while recording which word/context correspond to which row/column..
+    with open(src_filename, 'r') as fds:
+        for line in fds:
+            (word, context, ppm) = line.rstrip().split('\t')
+            data_list[row_word_dict[word]][col_cont_dict[context]] = float(ppm)
+
+    # Converting the list into nparray
     data_array = np.array(data_list)
-    print(data_array)
-    data_array = np.identity(data_size) * data_array
-    print(data_array)
+    # Conduct PCA transformation..
+    print("size of data_array: " + str(data_array.shape))
     pca.fit(data_array)
-    print(pca.components_)
-    #print(len(data_list))
-    return(None)
+    data_array_converted = pca.transform(data_array)
+    print("size of data_array after fit: " + str(data_array_converted.shape))
+    np.save(dst_filename, data_array_converted)
+    # Following is not really required, but anyhow..
+    data_array_reversed = pca.inverse_transform(data_array_converted)
+    print("size of data_array after revert: " + str(data_array_reversed.shape))
+    return("Completed")
 
 '''
 86. 単語ベクトルの表示
@@ -282,7 +303,7 @@ if(__name__ == '__main__'):
             "ch9_knock93_pair_occurrence.txt",
             "ch9_knock94_matrix.txt"))
     if(args.knock == 5 or args.knock == 85):
-        print(knock85("ch9_knock94_matrix.txt", "ch9_knock95_matrix.txt"))
+        print(knock85("ch9_knock94_matrix.txt", "ch9_knock95_matrix"))
     if(args.knock == 6 or args.knock == 86):
         print(knock86())
     if(args.knock == 7 or args.knock == 87):
