@@ -217,7 +217,12 @@ def knock85(src_filename:str, dst_filename:str):
             (word, context, ppm) = line.rstrip().split('\t')
             data_list.append(float(ppm))
     data_size = len(data_list)
-    data_array = np.identity(data_size) * np.array(data_list)
+    print(data_size)
+    #data_array = np.identity(data_size) * np.array(data_list)
+    data_array = np.array(data_list)
+    print(data_array)
+    data_array = np.identity(data_size) * data_array
+    print(data_array)
     pca.fit(data_array)
     print(pca.components_)
     #print(len(data_list))
@@ -259,7 +264,10 @@ if(__name__ == '__main__'):
     args = parser.parse_args()
 
     if(args.knock == 0 or args.knock == 80):
-        print(knock80("enwiki-20150112-400-r100-10576.txt", "ch9_knock90_enwiki.txt"))
+        if(not args.arg):
+            args.arg = "enwiki-20150112-400-r10-105752.txt"
+            args.arg = "enwiki-20150112-400-r100-10576.txt"
+        print(knock80(args.arg, "ch9_knock90_enwiki.txt"))
     if(args.knock == 1 or args.knock == 81):
         print(knock81("ch9_knock90_enwiki.txt", "ch9_knock91_enwiki.txt"))
     if(args.knock == 2 or args.knock == 82):
