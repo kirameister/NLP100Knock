@@ -184,8 +184,8 @@ def knock84(src_wco_filename:str, src_wo_filename:str, src_ct_filename:str, src_
         for line in fds:
             (token, context, count) = line.rstrip().split('\t')
             key = token + "\t" + context
-            #if(int(count) >= 7):
-            if(int(count) >= 10):
+            if(int(count) >= 5):
+            #if(int(count) >= 10):
                 word_context_occur[key] = count
     with open(src_wo_filename, 'r') as fds:
         for line in fds:
@@ -312,8 +312,26 @@ def knock88(search_word:str, src_filename:str, src_word_dict_filename:str, src_c
 89. 加法構成性によるアナロジー
 85で得た単語の意味ベクトルを読み込み，vec("Spain") - vec("Madrid") + vec("Athens")を計算し，そのベクトルと類似度の高い10語とその類似度を出力せよ．
 '''
-def knock89(search_word:str, src_filename:str, src_word_dict_filename:str, src_cont_dict_filename:str):
-    return(None)
+def knock89(word1:str, word2:str, word3:str, src_filename:str, src_word_dict_filename:str, src_cont_dict_filename:str):
+    return_item_num = 10
+    return_value = ""
+    word_similarity_dict = dict()
+    data_array_converted = np.load(src_filename)
+    with open(src_word_dict_filename, 'r') as fds:
+        row_word_dict = json.load(fds)
+    vector = data_array_converted[row_word_dict[word1]] -\
+            data_array_converted[row_word_dict[word2]] +\
+            data_array_converted[row_word_dict[word3]]
+    for key, value in row_word_dict.items():
+        similarity = scipy.spatial.distance.cosine(vector, data_array_converted[row_word_dict[key]])
+        word_similarity_dict[key] = similarity
+    i = 0
+    for key, value in sorted(word_similarity_dict.items(), key=lambda x:x[1]):
+        if(i > return_item_num):
+            break
+        i += 1
+        return_value += key + "\t" + str(value) + "\n"
+    return(return_value)
 
 
 if(__name__ == '__main__'):
@@ -327,40 +345,45 @@ if(__name__ == '__main__'):
         if(not args.arg):
             args.arg = "enwiki-20150112-400-r10-105752.txt"
             args.arg = "enwiki-20150112-400-r100-10576.txt"
-        print(knock80(args.arg, "ch9_knock90_enwiki.txt"))
+        print(knock80(args.arg, "temp_knock80_enwiki.txt"))
     if(args.knock == 1 or args.knock == 81):
-        print(knock81("ch9_knock90_enwiki.txt", "ch9_knock91_enwiki.txt"))
+        print(knock81("temp_knock80_enwiki.txt", "temp_knock81_enwiki.txt"))
     if(args.knock == 2 or args.knock == 82):
-        print(knock82("ch9_knock91_enwiki.txt", "ch9_knock92_enwiki.txt"))
+        print(knock82("temp_knock81_enwiki.txt", "temp_knock82_enwiki.txt"))
     if(args.knock == 3 or args.knock == 83):
-        print(knock83("ch9_knock92_enwiki.txt", "ch9_knock93_word_context.txt",
-            "ch9_knock93_word.txt", "ch9_knock93_context.txt", 
-            "ch9_knock93_pair_occurrence.txt"))
+        print(knock83("temp_knock82_enwiki.txt", 
+            "temp_knock83_word_context.txt",
+            "temp_knock83_word.txt", "temp_knock83_context.txt", 
+            "temp_knock83_pair_occurrence.txt"))
     if(args.knock == 4 or args.knock == 84):
-        print(knock84("ch9_knock93_word_context.txt",
-            "ch9_knock93_word.txt", "ch9_knock93_context.txt", 
-            "ch9_knock93_pair_occurrence.txt",
-            "ch9_knock94_matrix.txt"))
+        print(knock84("temp_knock83_word_context.txt",
+            "temp_knock83_word.txt", "temp_knock83_context.txt", 
+            "temp_knock83_pair_occurrence.txt",
+            "temp_knock84_matrix.txt"))
     if(args.knock == 5 or args.knock == 85):
-        print(knock85("ch9_knock94_matrix.txt", "ch9_knock95_matrix.npy", "ch9_knock95_word_dict.json", "ch9_knock95_cont_dict.json"))
+        print(knock85("temp_knock84_matrix.txt", "temp_knock85_matrix.npy", 
+            "temp_knock85_word_dict.json", "temp_knock85_cont_dict.json"))
     if(args.knock == 6 or args.knock == 86):
         if(not args.arg):
             args.arg = "United_States"
-        print(knock86(args.arg, "ch9_knock95_matrix.npy", "ch9_knock95_word_dict.json", "ch9_knock95_cont_dict.json"))
+        print(knock86(args.arg, "temp_knock85_matrix.npy", 
+            "temp_knock85_word_dict.json", "temp_knock85_cont_dict.json"))
     if(args.knock == 7 or args.knock == 87):
         if(not args.arg):
             args.arg = "United_States"
         if(not args.secondary):
             args.secondary = "U.S"
             args.secondary = "American"
-        print(knock87(args.arg, args.secondary, "ch9_knock95_matrix.npy", "ch9_knock95_word_dict.json", "ch9_knock95_cont_dict.json"))
+        print(knock87(args.arg, args.secondary, "temp_knock85_matrix.npy", 
+            "temp_knock85_word_dict.json", "temp_knock85_cont_dict.json"))
     if(args.knock == 8 or args.knock == 88):
         if(not args.arg):
             args.arg = "England"
-            args.arg = "United_States"
-        print(knock88(args.arg, "ch9_knock95_matrix.npy", "ch9_knock95_word_dict.json", "ch9_knock95_cont_dict.json"))
+        print(knock88(args.arg, "temp_knock85_matrix.npy", 
+            "temp_knock85_word_dict.json", "temp_knock85_cont_dict.json"))
     if(args.knock == 9 or args.knock == 89):
-        print(knock89())
+        print(knock89("Spain", "Madrid", "Athens", "temp_knock85_matrix.npy", 
+            "temp_knock85_word_dict.json", "temp_knock85_cont_dict.json"))
 
 
 
