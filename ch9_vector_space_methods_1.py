@@ -209,10 +209,18 @@ def knock84(src_wco_filename:str, src_wo_filename:str, src_ct_filename:str, src_
 84で得られた単語文脈行列に対して，主成分分析を適用し，単語の意味ベクトルを300次元に圧縮せよ．
 '''
 def knock85(src_filename:str, dst_filename:str):
+    data_list = []
+    n_dim = 300
+    pca = sklearn.decomposition.PCA(n_components = n_dim)
     with open(src_filename, 'r') as fds:
         for line in fds:
             (word, context, ppm) = line.rstrip().split('\t')
-
+            data_list.append(float(ppm))
+    data_size = len(data_list)
+    data_array = np.identity(data_size) * np.array(data_list)
+    pca.fit(data_array)
+    print(pca.components_)
+    #print(len(data_list))
     return(None)
 
 '''
