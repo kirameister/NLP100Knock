@@ -184,6 +184,7 @@ def knock84(src_wco_filename:str, src_wo_filename:str, src_ct_filename:str, src_
         for line in fds:
             (token, context, count) = line.rstrip().split('\t')
             key = token + "\t" + context
+            #if(int(count) >= 7):
             if(int(count) >= 10):
                 word_context_occur[key] = count
     with open(src_wo_filename, 'r') as fds:
@@ -311,7 +312,7 @@ def knock88(search_word:str, src_filename:str, src_word_dict_filename:str, src_c
 89. 加法構成性によるアナロジー
 85で得た単語の意味ベクトルを読み込み，vec("Spain") - vec("Madrid") + vec("Athens")を計算し，そのベクトルと類似度の高い10語とその類似度を出力せよ．
 '''
-def knock89():
+def knock89(search_word:str, src_filename:str, src_word_dict_filename:str, src_cont_dict_filename:str):
     return(None)
 
 
