@@ -3,6 +3,9 @@
 
 
 import argparse
+import logging
+
+from gensim.models import word2vec
 
 
 '''
@@ -13,7 +16,10 @@ import argparse
 90. word2vecによる学習
 81で作成したコーパスに対してword2vecを適用し，単語ベクトルを学習せよ．さらに，学習した単語ベクトルの形式を変換し，86-89のプログラムを動かせ．
 '''
-def knock90():
+def knock90(src_filename:str, dst_filename:str):
+    data = word2vec.Text8Corpus(src_filename)
+    model = word2vec.Word2Vec(data, size=300)
+    model.save(dst_filename)
     return(None)
 
 '''
@@ -87,7 +93,7 @@ if(__name__ == '__main__'):
     args = parser.parse_args()
 
     if(args.knock == 0 or args.knock == 90):
-        print(knock90())
+        print(knock90("temp_knock81_enwiki.txt", "temp_knock91"))
     if(args.knock == 1 or args.knock == 91):
         print(knock91())
     if(args.knock == 2 or args.knock == 92):
