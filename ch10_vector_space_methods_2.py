@@ -32,7 +32,7 @@ def knock90(src_filename:str, dst_filename:str):
 
 '''
 91. アナロジーデータの準備
-単語アナロジーの評価データをダウンロードせよ．このデータ中で": "で始まる行はセクション名を表す．例えば，": capital-common-countries"という行は，"capital-common-countries"というセクションの開始を表している．ダウンロードした評価データの中で，"family"というセクションに含まれる評価事例を抜き出してファイルに保存せよ．
+単語アナロジーの評価データ (https://word2vec.googlecode.com/svn/trunk/questions-words.txt) をダウンロードせよ．このデータ中で": "で始まる行はセクション名を表す．例えば，": capital-common-countries"という行は，"capital-common-countries"というセクションの開始を表している．ダウンロードした評価データの中で，"family"というセクションに含まれる評価事例を抜き出してファイルに保存せよ．
 '''
 def knock91():
     return(None)
