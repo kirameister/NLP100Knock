@@ -20,7 +20,15 @@ def knock90(src_filename:str, dst_filename:str):
     data = word2vec.Text8Corpus(src_filename)
     model = word2vec.Word2Vec(data, size=300)
     model.save(dst_filename)
-    return(None)
+    print("Knock86: ", end="")
+    print(model['United_States'])
+    print("Knock87: ", end="")
+    print(model.similarity('United_States', 'U.S'))
+    print("Knock88: ", end="")
+    print(model.most_similar(positive=["England"]))
+    print("Knock89: ", end="")
+    print(model.most_similar(positive=["Spain", "Athens"], negative=["Madrid"]))
+    return("Completed")
 
 '''
 91. アナロジーデータの準備
