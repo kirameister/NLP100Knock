@@ -50,6 +50,14 @@ enwiki-20150112-400-r100-10576.txt.bz2:
 enwiki-20150112-400-r100-10576.txt: enwiki-20150112-400-r100-10576.txt.bz2
 	bzip2 -d enwiki-20150112-400-r100-10576.txt.bz2
 
+source-archive.zip:
+	wget https://storage.googleapis.com/google-code-archive-source/v2/code.google.com/word2vec/source-archive.zip
+	unzip source-archive.zip
+questions-words.txt: source-archive.zip
+	cp word2vec/trunk/questions-words.txt ./
+
+
+
 temporary_files = col1.txt col2.txt
 
 clean:
