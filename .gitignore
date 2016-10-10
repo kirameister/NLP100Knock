@@ -30,3 +30,6 @@ __pycache__/
 enwiki-20150112-400-r100-10576.txt
 .DS_Store
 temp_*
+questions-words.txt
+source-archive.zip
+word2vec/
