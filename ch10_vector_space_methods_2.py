@@ -4,6 +4,7 @@
 
 import argparse
 import logging
+import re
 
 from gensim.models import word2vec
 
@@ -34,8 +35,17 @@ def knock90(src_filename:str, dst_filename:str):
 91. アナロジーデータの準備
 単語アナロジーの評価データ (https://word2vec.googlecode.com/svn/trunk/questions-words.txt) をダウンロードせよ．このデータ中で": "で始まる行はセクション名を表す．例えば，": capital-common-countries"という行は，"capital-common-countries"というセクションの開始を表している．ダウンロードした評価データの中で，"family"というセクションに含まれる評価事例を抜き出してファイルに保存せよ．
 '''
-def knock91(src_text_filename:str):
-    return(None)
+def knock91(src_text_filename:str, dst_filename:str):
+    with open(src_text_filename, 'r') as fds:
+        with open(dst_filename, 'w') as fdd:
+            for line in fds:
+                if(re.match('^: family', line)):
+                    break
+            for line in fds:
+                if(re.match('^:', line)):
+                    break
+                fdd.write(line)
+    return("Completed")
 
 '''
 92. アナロジーデータへの適用
@@ -101,9 +111,9 @@ if(__name__ == '__main__'):
     args = parser.parse_args()
 
     if(args.knock == 0 or args.knock == 90):
-        print(knock90("temp_knock81_enwiki.txt", "temp_knock91"))
+        print(knock90("temp_knock81_enwiki.txt", "temp_knock90"))
     if(args.knock == 1 or args.knock == 91):
-        print(knock91("questions-words.txt"))
+        print(knock91("questions-words.txt", "temp_knock91"))
     if(args.knock == 2 or args.knock == 92):
         print(knock92())
     if(args.knock == 3 or args.knock == 93):
