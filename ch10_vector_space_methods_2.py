@@ -52,6 +52,11 @@ def knock91(src_text_filename:str, dst_filename:str):
 91で作成した評価データの各事例に対して，vec(2列目の単語) - vec(1列目の単語) + vec(3列目の単語)を計算し，そのベクトルと類似度が最も高い単語と，その類似度を求めよ．求めた単語と類似度は，各事例の末尾に追記せよ．このプログラムを85で作成した単語ベクトル，90で作成した単語ベクトルに対して適用せよ．
 '''
 def knock92(question_words_filename:str, wv_85_filename:str, wv_90_filename:str):
+    with open(question_words_filename, 'r') as fds:
+        for line in fds:
+            #print(line)
+            (word1, word2, word3, word4) = line.split(' ')
+            #print(word1 + "\t" + word2 + '\t' + word3)
     return("Completed")
 
 '''
@@ -115,7 +120,7 @@ if(__name__ == '__main__'):
     if(args.knock == 1 or args.knock == 91):
         print(knock91("questions-words.txt", "temp_knock91"))
     if(args.knock == 2 or args.knock == 92):
-        print(knock92())
+        print(knock92("temp_knock91", "dummy", "temp_knock90"))
     if(args.knock == 3 or args.knock == 93):
         print(knock93())
     if(args.knock == 4 or args.knock == 94):
