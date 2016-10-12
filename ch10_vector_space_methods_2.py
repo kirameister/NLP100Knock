@@ -51,8 +51,8 @@ def knock91(src_text_filename:str, dst_filename:str):
 92. アナロジーデータへの適用
 91で作成した評価データの各事例に対して，vec(2列目の単語) - vec(1列目の単語) + vec(3列目の単語)を計算し，そのベクトルと類似度が最も高い単語と，その類似度を求めよ．求めた単語と類似度は，各事例の末尾に追記せよ．このプログラムを85で作成した単語ベクトル，90で作成した単語ベクトルに対して適用せよ．
 '''
-def knock92():
-    return(None)
+def knock92(question_words_filename:str, wv_85_filename:str, wv_90_filename:str):
+    return("Completed")
 
 '''
 93. アナロジータスクの正解率の計算
