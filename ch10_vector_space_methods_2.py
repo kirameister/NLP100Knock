@@ -3,11 +3,15 @@
 
 
 import argparse
+import json
 import logging
 import re
 
 from gensim.models import word2vec
-
+from gensim.models import Word2Vec
+import numpy as np
+import scipy
+import scipy.spatial.distance
 
 '''
 第10章では，前章に引き続き単語ベクトルの学習に取り組む．
@@ -51,13 +55,32 @@ def knock91(src_text_filename:str, dst_filename:str):
 92. アナロジーデータへの適用
 91で作成した評価データの各事例に対して，vec(2列目の単語) - vec(1列目の単語) + vec(3列目の単語)を計算し，そのベクトルと類似度が最も高い単語と，その類似度を求めよ．求めた単語と類似度は，各事例の末尾に追記せよ．このプログラムを85で作成した単語ベクトル，90で作成した単語ベクトルに対して適用せよ．
 '''
-def knock92(question_words_filename:str, wv_85_filename:str, wv_90_filename:str):
+def knock92(question_words_filename:str, wv_90_filename:str, wv_85_model_filename:str, wv_85_dict_filename:str):
+    return_value = ""
+    model_90 = Word2Vec.load(wv_90_filename)
+    model_85 = np.load(wv_85_model_filename)
+    with open(wv_85_dict_filename, 'r') as fds:
+        dict_85 = json.load(fds)
     with open(question_words_filename, 'r') as fds:
         for line in fds:
-            #print(line)
+            word_similarity_dict = dict()
+            line = line.rstrip()
             (word1, word2, word3, word4) = line.split(' ')
-            #print(word1 + "\t" + word2 + '\t' + word3)
-    return("Completed")
+            try:
+                similar_word = model_90.most_similar(positive=[word2, word3], negative=[word1])
+                vec = model_85[dict_85[word2]] - model_85[dict_85[word1]] + model_85[dict_85[word3]]
+                #print("Model90\t" + word2 + " - " + word1 + " + " + word3 + " ==> " + similar_word[0][0] + " (" + str(similar_word[0][1]) + ")")
+                return_value += "Model90\t" + word2 + " - " + word1 + " + " + word3 + " ==> " + similar_word[0][0] + " (" + str(similar_word[0][1]) + ")\n"
+                for key,value in dict_85.items():
+                    similarity = scipy.spatial.distance.cosine(model_85[dict_85[key]], vec)
+                    word_similarity_dict[key] = similarity
+                (word, value) = sorted(word_similarity_dict.items(), key=lambda x:x[1])[0]
+                #print("Model85\t" + word2 + " - " + word1 + " + " + word3 + " ==> " + word + " (" + str(value) + ")")
+                return_value += "Model85\t" + word2 + " - " + word1 + " + " + word3 + " ==> " + word + " (" + str(value) + ")\n"
+            except KeyError:
+                # this is required in order to avoid OOV error (we simply ignore it)
+                continue
+    return(return_value)
 
 '''
 93. アナロジータスクの正解率の計算
@@ -120,7 +143,8 @@ if(__name__ == '__main__'):
     if(args.knock == 1 or args.knock == 91):
         print(knock91("questions-words.txt", "temp_knock91"))
     if(args.knock == 2 or args.knock == 92):
-        print(knock92("temp_knock91", "dummy", "temp_knock90"))
+        #print(knock90("temp_knock81_enwiki.txt", "temp_knock90"))
+        print(knock92("temp_knock91", "temp_knock90", "temp_knock85_matrix.npy", "temp_knock85_word_dict.json"))
     if(args.knock == 3 or args.knock == 93):
         print(knock93())
     if(args.knock == 4 or args.knock == 94):
