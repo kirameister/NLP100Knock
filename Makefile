@@ -1,5 +1,5 @@
 
-target_files = hightemp.txt jawiki-country.json neko.txt neko.txt.mecab neko.txt.cabocha nlp.txt artist.json rt-polaritydata.README.1.0.txt enwiki-20150112-400-r10-105752.txt enwiki-20150112-400-r10-105752.txt.bz2 stanford-corenlp-full-2015-12-09.zip rt-polaritydata.tar.gz enwiki-20150112-400-r100-10576.txt
+target_files = hightemp.txt jawiki-country.json neko.txt neko.txt.mecab neko.txt.cabocha nlp.txt artist.json rt-polaritydata.README.1.0.txt enwiki-20150112-400-r10-105752.txt enwiki-20150112-400-r10-105752.txt.bz2 stanford-corenlp-full-2015-12-09.zip rt-polaritydata.tar.gz enwiki-20150112-400-r100-10576.txt wordsim353.zip
 
 all: $(target_files)
 
@@ -55,7 +55,9 @@ source-archive.zip:
 	unzip source-archive.zip
 questions-words.txt: source-archive.zip
 	cp word2vec/trunk/questions-words.txt ./
-
+wordsim353.zip:
+	wget http://www.cs.technion.ac.il/~gabr/resources/data/wordsim353/wordsim353.zip
+	unzip wordsim353.zip
 
 
 temporary_files = col1.txt col2.txt
