@@ -105,11 +105,51 @@ def knock93(question_words_filename:str, wv_90_filename:str, wv_85_model_filenam
     return(float(correct / total))
 
 '''
-94. WordSimilarity-353での類似度計算
+94. WordSimilarity-353 での類似度計算
 The WordSimilarity-353 Test Collection (http://www.cs.technion.ac.il/~gabr/resources/data/wordsim353/) の評価データを入力とし，1列目と2列目の単語の類似度を計算し，各行の末尾に類似度の値を追加するプログラムを作成せよ．このプログラムを85で作成した単語ベクトル，90で作成した単語ベクトルに対して適用せよ．
 '''
-def knock94():
-    return(None)
+def knock94_word2vec(word1:str, word2, wv_90_model):
+    try:
+        return_value = wv_90_model.similarity(word1, word2)
+    except KeyError:
+        return_value = 0.0
+    return(return_value)
+
+def knock94_myword2vec(word1:str, word2:str, wv_85_model:str, wv_85_dict:str):
+    try:
+        return_value = scipy.spatial.distance.cosine(wv_85_model[wv_85_dict[word1]], wv_85_model[wv_85_dict[word2]])
+    except KeyError:
+        return_value = 0.0
+    return(return_value)
+
+def knock94(eval_set_filename:str, wv_90_filename:str, wv_85_model_filename:str, wv_85_dict_filename:str):
+    print("== Results using using Word2Vec ==")
+    model_90 = Word2Vec.load(wv_90_filename)
+    with open(eval_set_filename, 'r') as fds:
+        for line in fds:
+            words_list = line.split('\t')
+            word1 = words_list[0]
+            word2 = words_list[1]
+            if(word1 == 'Word 1' and str(word2) == 'Word 2'):
+                continue
+            similarity = knock94_word2vec(word1, word2, model_90)
+            print(word1 + " " + word2 + ": " + str(similarity))
+
+    print("== Results using using PCA from knock85 ==")
+    model_85 = np.load(wv_85_model_filename)
+    with open(wv_85_dict_filename, 'r') as fds:
+        dict_85 = json.load(fds)
+    with open(eval_set_filename, 'r') as fds:
+        for line in fds:
+            words_list = line.split('\t')
+            word1 = words_list[0]
+            word2 = words_list[1]
+            if(word1 == 'Word 1' and str(word2) == 'Word 2'):
+                continue
+            similarity = knock94_myword2vec(word1, word2, model_85, dict_85)
+            print(word1 + " " + word2 + ": " + str(similarity))
+
+    return("Complete")
 
 '''
 95. WordSimilarity-353での評価
@@ -163,7 +203,7 @@ if(__name__ == '__main__'):
     if(args.knock == 3 or args.knock == 93):
         print(knock93("temp_knock91", "temp_knock90", "temp_knock85_matrix.npy", "temp_knock85_word_dict.json"))
     if(args.knock == 4 or args.knock == 94):
-        print(knock94())
+        print(knock94("combined.tab", "temp_knock90", "temp_knock85_matrix.npy", "temp_knock85_word_dict.json"))
     if(args.knock == 5 or args.knock == 95):
         print(knock95())
     if(args.knock == 6 or args.knock == 96):
