@@ -86,8 +86,23 @@ def knock92(question_words_filename:str, wv_90_filename:str, wv_85_model_filenam
 93. アナロジータスクの正解率の計算
 92で作ったデータを用い，各モデルのアナロジータスクの正解率を求めよ．
 '''
-def knock93():
-    return(None)
+def knock93(question_words_filename:str, wv_90_filename:str, wv_85_model_filename:str, wv_85_dict_filename:str):
+    lines = knock92(question_words_filename, wv_90_filename, wv_85_model_filename, wv_85_dict_filename)
+    lines_list = lines.split('\n')
+    total = 0
+    correct = 0
+    while(True):
+        try:
+            expected = lines_list.pop(0)
+            predicted = lines_list.pop(0)
+        except:
+            break
+        expected_word  = re.sub(r'^.*==> (.*?) \(.*$', '\\1', expected)
+        predicted_word = re.sub(r'^.*==> (.*?) \(.*$', '\\1', predicted)
+        if(expected_word.lower() == predicted_word.lower()):
+            correct += 1
+        total += 1
+    return(float(correct / total))
 
 '''
 94. WordSimilarity-353での類似度計算
@@ -146,7 +161,7 @@ if(__name__ == '__main__'):
         #print(knock90("temp_knock81_enwiki.txt", "temp_knock90"))
         print(knock92("temp_knock91", "temp_knock90", "temp_knock85_matrix.npy", "temp_knock85_word_dict.json"))
     if(args.knock == 3 or args.knock == 93):
-        print(knock93())
+        print(knock93("temp_knock91", "temp_knock90", "temp_knock85_matrix.npy", "temp_knock85_word_dict.json"))
     if(args.knock == 4 or args.knock == 94):
         print(knock94())
     if(args.knock == 5 or args.knock == 95):
