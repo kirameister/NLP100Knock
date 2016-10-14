@@ -155,7 +155,7 @@ def knock94(eval_set_filename:str, wv_90_filename:str, wv_85_model_filename:str,
 95. WordSimilarity-353での評価
 94で作ったデータを用い，各モデルが出力する類似度のランキングと，人間の類似度判定のランキングの間のスピアマン相関係数を計算せよ．
 '''
-def knock95():
+def knock95(eval_set_filename:str, wv_90_filename:str, wv_85_model_filename:str, wv_85_dict_filename:str):
     return(None)
 
 '''
@@ -205,7 +205,7 @@ if(__name__ == '__main__'):
     if(args.knock == 4 or args.knock == 94):
         print(knock94("combined.tab", "temp_knock90", "temp_knock85_matrix.npy", "temp_knock85_word_dict.json"))
     if(args.knock == 5 or args.knock == 95):
-        print(knock95())
+        print(knock95("combined.tab", "temp_knock90", "temp_knock85_matrix.npy", "temp_knock85_word_dict.json"))
     if(args.knock == 6 or args.knock == 96):
         print(knock96())
     if(args.knock == 7 or args.knock == 97):
