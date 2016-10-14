@@ -156,7 +156,35 @@ def knock94(eval_set_filename:str, wv_90_filename:str, wv_85_model_filename:str,
 94で作ったデータを用い，各モデルが出力する類似度のランキングと，人間の類似度判定のランキングの間のスピアマン相関係数を計算せよ．
 '''
 def knock95(eval_set_filename:str, wv_90_filename:str, wv_85_model_filename:str, wv_85_dict_filename:str):
-    return(None)
+    return_value = ""
+    model_90 = Word2Vec.load(wv_90_filename)
+    model_85 = np.load(wv_85_model_filename)
+    model_90_similarity_list = []
+    model_90_human_list      = []
+    model_85_similarity_list = []
+    model_85_human_list      = []
+    with open(wv_85_dict_filename, 'r') as fds:
+        dict_85 = json.load(fds)
+
+    with open(eval_set_filename, 'r') as fds:
+        for line in fds:
+            words_list = line.split('\t')
+            word1 = words_list[0]
+            word2 = words_list[1]
+            human_score = words_list[2]
+            if(word1 == 'Word 1' and str(word2) == 'Word 2'):
+                continue
+            similarity_90 = knock94_word2vec(word1, word2, model_90)
+            similarity_85 = knock94_myword2vec(word1, word2, model_85, dict_85)
+            if(similarity_90 != 0.0):
+                model_90_similarity_list.append(similarity_90)
+                model_90_human_list.append(human_score)
+            if(similarity_85 != 0.0):
+                model_85_similarity_list.append(similarity_85)
+                model_85_human_list.append(human_score)
+    return_value = str(scipy.stats.stats.spearmanr(model_90_similarity_list, model_90_human_list)[0])
+    return_value += "\t" + str(scipy.stats.stats.spearmanr(model_85_similarity_list, model_85_human_list)[0])
+    return(return_value)
 
 '''
 96. 国名に関するベクトルの抽出
