@@ -10,7 +10,7 @@ import re
 from gensim.models import word2vec
 from gensim.models import Word2Vec
 from sklearn.cluster import KMeans
-from sklearn.cluster import Ward
+#from sklearn.cluster import Ward
 import numpy as np
 import scipy
 import scipy.spatial.distance
@@ -18,6 +18,8 @@ import scipy.spatial.distance
 '''
 第10章では，前章に引き続き単語ベクトルの学習に取り組む．
 '''
+# Following list is for clustering.
+country_list = [ "Antigua_and_Barbuda", "Bosnia_and_Herzegovina", "Burkina_Faso", "Cabo_Verde", "Central_African_Republic", "Costa_Rica", "Cote_d\'Ivoire", "Czech_Republic", "Democratic_Republic_of_the_Congo", "Dominican_Republic", "East_Timor", "El_Salvador", "Equatorial_Guinea", "Guinea_Bissau", "Holy_See", "Hong_Kong", "Marshall_Islands", "New_Zealand", "North_Korea", "Palestinian_Territories", "Papua_New_Guinea", "Republic_of_the_Congo", "Saint_Kitts_and_Nevis", "Saint_Lucia", "Saint_Vincent_and_the_Grenadines", "San_Marino", "Sao_Tome_and_Principe", "Saudi_Arabia", "Sierra_Leone", "Sint_Maarten", "Solomon_Islands", "South_Africa", "South_Korea", "South_Sudan", "Sri_Lanka", "The_Bahamas", "The_Gambia", "Timor_Leste", "Trinidad_and_Tobago", "United_Arab_Emirates", "United_Kingdom", "United_States_of_America", "United_States" ]
 
 '''
 90. word2vecによる学習
@@ -193,7 +195,6 @@ def knock95(eval_set_filename:str, wv_90_filename:str, wv_85_model_filename:str,
 word2vecの学習結果から，国名に関するベクトルのみを抜き出せ．
 '''
 def knock96(wv_90_filename:str):
-    country_list = [ "Antigua_and_Barbuda", "Bosnia_and_Herzegovina", "Burkina_Faso", "Cabo_Verde", "Central_African_Republic", "Costa_Rica", "Cote_d\'Ivoire", "Czech_Republic", "Democratic_Republic_of_the_Congo", "Dominican_Republic", "East_Timor", "El_Salvador", "Equatorial_Guinea", "Guinea_Bissau", "Holy_See", "Hong_Kong", "Marshall_Islands", "New_Zealand", "North_Korea", "Palestinian_Territories", "Papua_New_Guinea", "Republic_of_the_Congo", "Saint_Kitts_and_Nevis", "Saint_Lucia", "Saint_Vincent_and_the_Grenadines", "San_Marino", "Sao_Tome_and_Principe", "Saudi_Arabia", "Sierra_Leone", "Sint_Maarten", "Solomon_Islands", "South_Africa", "South_Korea", "South_Sudan", "Sri_Lanka", "The_Bahamas", "The_Gambia", "Timor_Leste", "Trinidad_and_Tobago", "United_Arab_Emirates", "United_Kingdom", "United_States_of_America", "United_States" ]
     model_90 = Word2Vec.load(wv_90_filename)
     for country in country_list:
         try:
@@ -207,7 +208,6 @@ def knock96(wv_90_filename:str):
 96の単語ベクトルに対して，k-meansクラスタリングをクラスタ数 k=5 として実行せよ．
 '''
 def knock97(wv_90_filename:str):
-    country_list = [ "Antigua_and_Barbuda", "Bosnia_and_Herzegovina", "Burkina_Faso", "Cabo_Verde", "Central_African_Republic", "Costa_Rica", "Cote_d\'Ivoire", "Czech_Republic", "Democratic_Republic_of_the_Congo", "Dominican_Republic", "East_Timor", "El_Salvador", "Equatorial_Guinea", "Guinea_Bissau", "Holy_See", "Hong_Kong", "Marshall_Islands", "New_Zealand", "North_Korea", "Palestinian_Territories", "Papua_New_Guinea", "Republic_of_the_Congo", "Saint_Kitts_and_Nevis", "Saint_Lucia", "Saint_Vincent_and_the_Grenadines", "San_Marino", "Sao_Tome_and_Principe", "Saudi_Arabia", "Sierra_Leone", "Sint_Maarten", "Solomon_Islands", "South_Africa", "South_Korea", "South_Sudan", "Sri_Lanka", "The_Bahamas", "The_Gambia", "Timor_Leste", "Trinidad_and_Tobago", "United_Arab_Emirates", "United_Kingdom", "United_States_of_America", "United_States" ]
     model_90 = Word2Vec.load(wv_90_filename)
     cluster_list = []
     country_src_list = []
