@@ -190,9 +190,15 @@ def knock95(eval_set_filename:str, wv_90_filename:str, wv_85_model_filename:str,
 96. 国名に関するベクトルの抽出
 word2vecの学習結果から，国名に関するベクトルのみを抜き出せ．
 '''
-def knock96():
-    country_list = list( "Antigua_and_Barbuda" "Bosnia_and_Herzegovina" "Burkina_Faso" "Cabo_Verde" "Central_African_Republic" "Costa_Rica" "Cote_d\'Ivoire" "Czech_Republic" "Democratic_Republic_of_the_Congo" "Dominican_Republic" "East_Timor" "El_Salvador" "Equatorial_Guinea" "Guinea_Bissau" "Holy_See" "Hong_Kong" "Marshall_Islands" "New_Zealand" "North_Korea" "Palestinian_Territories" "Papua_New_Guinea" "Republic_of_the_Congo " "Saint_Kitts_and_Nevis" "Saint_Lucia" "Saint_Vincent_and_the_Grenadines" "San_Marino" "Sao_Tome_and_Principe" "Saudi_Arabia" "Sierra_Leone" "Sint_Maarten" "Solomon_Islands" "South_Africa" "South_Korea" "South_Sudan" "Sri_Lanka" "The_Bahamas" "The_Gambia" "Timor_Leste" "Trinidad_and_Tobago" "United_Arab_Emirates" "United_Kingdom" "United_States_of_America" "United_States" )
-    return(None)
+def knock96(wv_90_filename:str):
+    country_list = [ "Antigua_and_Barbuda", "Bosnia_and_Herzegovina", "Burkina_Faso", "Cabo_Verde", "Central_African_Republic", "Costa_Rica", "Cote_d\'Ivoire", "Czech_Republic", "Democratic_Republic_of_the_Congo", "Dominican_Republic", "East_Timor", "El_Salvador", "Equatorial_Guinea", "Guinea_Bissau", "Holy_See", "Hong_Kong", "Marshall_Islands", "New_Zealand", "North_Korea", "Palestinian_Territories", "Papua_New_Guinea", "Republic_of_the_Congo", "Saint_Kitts_and_Nevis", "Saint_Lucia", "Saint_Vincent_and_the_Grenadines", "San_Marino", "Sao_Tome_and_Principe", "Saudi_Arabia", "Sierra_Leone", "Sint_Maarten", "Solomon_Islands", "South_Africa", "South_Korea", "South_Sudan", "Sri_Lanka", "The_Bahamas", "The_Gambia", "Timor_Leste", "Trinidad_and_Tobago", "United_Arab_Emirates", "United_Kingdom", "United_States_of_America", "United_States" ]
+    model_90 = Word2Vec.load(wv_90_filename)
+    for country in country_list:
+        try:
+            print(country + "\t" + str(model_90[country]))
+        except KeyError:
+            print("Skipping " + country + "..")
+    return("Completed")
 
 '''
 97. k-meansクラスタリング
@@ -236,7 +242,7 @@ if(__name__ == '__main__'):
     if(args.knock == 5 or args.knock == 95):
         print(knock95("combined.tab", "temp_knock90", "temp_knock85_matrix.npy", "temp_knock85_word_dict.json"))
     if(args.knock == 6 or args.knock == 96):
-        print(knock96())
+        print(knock96("temp_knock90"))
     if(args.knock == 7 or args.knock == 97):
         print(knock97())
     if(args.knock == 8 or args.knock == 98):
