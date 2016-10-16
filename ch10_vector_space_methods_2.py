@@ -10,6 +10,7 @@ import re
 from gensim.models import word2vec
 from gensim.models import Word2Vec
 from sklearn.cluster import KMeans
+from sklearn.cluster import Ward
 import numpy as np
 import scipy
 import scipy.spatial.distance
@@ -228,7 +229,7 @@ def knock97(wv_90_filename:str):
 98. Ward法によるクラスタリング
 96の単語ベクトルに対して，Ward 法による階層型クラスタリングを実行せよ．さらに，クラスタリング結果をデンドログラムとして可視化せよ．
 '''
-def knock98():
+def knock98(wv_90_filename:str):
     return(None)
 
 '''
@@ -263,7 +264,7 @@ if(__name__ == '__main__'):
     if(args.knock == 7 or args.knock == 97):
         print(knock97("temp_knock90"))
     if(args.knock == 8 or args.knock == 98):
-        print(knock98())
+        print(knock98("temp_knock90"))
     if(args.knock == 9 or args.knock == 99):
         print(knock99())
 
