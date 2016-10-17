@@ -243,7 +243,7 @@ def knock98(wv_90_filename:str):
             pass
     cluster_nparray = np.array(cluster_list)
     ward = AgglomerativeClustering(n_clusters=5, linkage='ward',connectivity=cluster_nparray)
-    return(None)
+    return("Completed")
 
 '''
 99. t-SNEによる可視化
