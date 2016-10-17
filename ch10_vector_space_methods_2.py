@@ -9,6 +9,7 @@ import re
 
 from gensim.models import word2vec
 from gensim.models import Word2Vec
+from sklearn.cluster import AgglomerativeClustering
 from sklearn.cluster import KMeans
 #from sklearn.cluster import Ward
 import numpy as np
@@ -230,6 +231,18 @@ def knock97(wv_90_filename:str):
 96の単語ベクトルに対して，Ward 法による階層型クラスタリングを実行せよ．さらに，クラスタリング結果をデンドログラムとして可視化せよ．
 '''
 def knock98(wv_90_filename:str):
+    model_90 = Word2Vec.load(wv_90_filename)
+    cluster_list = []
+    country_src_list = []
+
+    for country in country_list:
+        try:
+            cluster_list.append(model_90[country])
+            country_src_list.append(country)
+        except KeyError:
+            pass
+    cluster_nparray = np.array(cluster_list)
+    ward = AgglomerativeClustering(n_clusters=5, linkage='ward',connectivity=cluster_nparray)
     return(None)
 
 '''
