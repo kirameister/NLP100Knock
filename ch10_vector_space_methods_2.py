@@ -17,6 +17,7 @@ import numpy as np
 import scipy
 import scipy.spatial.distance
 from scipy.cluster.hierarchy import dendrogram, linkage
+from sklearn.manifold import TSNE
 
 '''
 第10章では，前章に引き続き単語ベクトルの学習に取り組む．
@@ -245,7 +246,6 @@ def knock98(wv_90_filename:str):
             pass
     cluster_nparray = np.array(cluster_list)
     Z = linkage(cluster_nparray, 'ward')
-    print(Z)
     plt.figure(figsize=(25, 10))
     plt.title('Hierarchical Clustering Dendrogram')
     plt.xlabel('sample index')
@@ -262,8 +262,26 @@ def knock98(wv_90_filename:str):
 99. t-SNEによる可視化
 96の単語ベクトルに対して，ベクトル空間を t-SNE で可視化せよ．
 '''
-def knock99():
-    return(None)
+def knock99(wv_90_filename:str):
+    model_90 = Word2Vec.load(wv_90_filename)
+    cluster_list = []
+    country_src_list = []
+
+    for country in country_list:
+        try:
+            cluster_list.append(model_90[country])
+            country_src_list.append(country)
+        except KeyError:
+            pass
+    cluster_nparray = np.array(cluster_list)
+    t_sne_result = TSNE().fit_transform(cluster_nparray)
+
+    fig, ax = plt.subplots()
+    ax.scatter(t_sne_result[:, 0], t_sne_result[:, 1])
+    for index, label in enumerate(country_src_list):
+        ax.annotate(label, xy=(t_sne_result[index, 0], t_sne_result[index, 1]))
+    plt.show()
+    return("Completed")
 
 
 if(__name__ == '__main__'):
@@ -292,6 +310,6 @@ if(__name__ == '__main__'):
     if(args.knock == 8 or args.knock == 98):
         print(knock98("temp_knock90"))
     if(args.knock == 9 or args.knock == 99):
-        print(knock99())
+        print(knock99("temp_knock90"))
 
 
