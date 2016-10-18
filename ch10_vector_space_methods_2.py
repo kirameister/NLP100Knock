@@ -20,7 +20,7 @@ import scipy.spatial.distance
 第10章では，前章に引き続き単語ベクトルの学習に取り組む．
 '''
 # Following list is for clustering.
-country_list = [ "Antigua_and_Barbuda", "Bosnia_and_Herzegovina", "Burkina_Faso", "Cabo_Verde", "Central_African_Republic", "Costa_Rica", "Cote_d\'Ivoire", "Czech_Republic", "Democratic_Republic_of_the_Congo", "Dominican_Republic", "East_Timor", "El_Salvador", "Equatorial_Guinea", "Guinea_Bissau", "Holy_See", "Hong_Kong", "Marshall_Islands", "New_Zealand", "North_Korea", "Palestinian_Territories", "Papua_New_Guinea", "Republic_of_the_Congo", "Saint_Kitts_and_Nevis", "Saint_Lucia", "Saint_Vincent_and_the_Grenadines", "San_Marino", "Sao_Tome_and_Principe", "Saudi_Arabia", "Sierra_Leone", "Sint_Maarten", "Solomon_Islands", "South_Africa", "South_Korea", "South_Sudan", "Sri_Lanka", "The_Bahamas", "The_Gambia", "Timor_Leste", "Trinidad_and_Tobago", "United_Arab_Emirates", "United_Kingdom", "United_States_of_America", "United_States" ]
+country_list = [ "Japan", "Germany", "Antigua_and_Barbuda", "Bosnia_and_Herzegovina", "Burkina_Faso", "Cabo_Verde", "Central_African_Republic", "Costa_Rica", "Cote_d\'Ivoire", "Czech_Republic", "Democratic_Republic_of_the_Congo", "Dominican_Republic", "East_Timor", "El_Salvador", "Equatorial_Guinea", "Guinea_Bissau", "Holy_See", "Hong_Kong", "Marshall_Islands", "New_Zealand", "North_Korea", "Palestinian_Territories", "Papua_New_Guinea", "Republic_of_the_Congo", "Saint_Kitts_and_Nevis", "Saint_Lucia", "Saint_Vincent_and_the_Grenadines", "San_Marino", "Sao_Tome_and_Principe", "Saudi_Arabia", "Sierra_Leone", "Sint_Maarten", "Solomon_Islands", "South_Africa", "South_Korea", "South_Sudan", "Sri_Lanka", "The_Bahamas", "The_Gambia", "Timor_Leste", "Trinidad_and_Tobago", "United_Arab_Emirates", "United_Kingdom", "United_States_of_America", "United_States" ]
 
 '''
 90. word2vecによる学習
@@ -242,7 +242,12 @@ def knock98(wv_90_filename:str):
         except KeyError:
             pass
     cluster_nparray = np.array(cluster_list)
-    ward = AgglomerativeClustering(n_clusters=5, linkage='ward',connectivity=cluster_nparray)
+    connectivity = cluster_nparray
+    ward = AgglomerativeClustering(n_clusters=5, linkage='ward')
+    ward.fit(cluster_nparray)
+    labels = ward.labels_
+    for i in range(len(labels)):
+        print(country_src_list[i] + "\t" + str(labels[i]))
     return("Completed")
 
 '''
