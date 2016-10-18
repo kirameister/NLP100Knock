@@ -9,12 +9,14 @@ import re
 
 from gensim.models import word2vec
 from gensim.models import Word2Vec
+from matplotlib import pyplot as plt
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.cluster import KMeans
 #from sklearn.cluster import Ward
 import numpy as np
 import scipy
 import scipy.spatial.distance
+from scipy.cluster.hierarchy import dendrogram, linkage
 
 '''
 第10章では，前章に引き続き単語ベクトルの学習に取り組む．
@@ -242,12 +244,18 @@ def knock98(wv_90_filename:str):
         except KeyError:
             pass
     cluster_nparray = np.array(cluster_list)
-    connectivity = cluster_nparray
-    ward = AgglomerativeClustering(n_clusters=5, linkage='ward')
-    ward.fit(cluster_nparray)
-    labels = ward.labels_
-    for i in range(len(labels)):
-        print(country_src_list[i] + "\t" + str(labels[i]))
+    Z = linkage(cluster_nparray, 'ward')
+    print(Z)
+    plt.figure(figsize=(25, 10))
+    plt.title('Hierarchical Clustering Dendrogram')
+    plt.xlabel('sample index')
+    plt.ylabel('distance')
+    dendrogram(
+                Z,
+                labels=country_src_list,
+                leaf_font_size=8.,  # font size for the x axis labels
+              )
+    plt.show()
     return("Completed")
 
 '''
